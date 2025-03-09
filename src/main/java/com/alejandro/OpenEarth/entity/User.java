@@ -31,8 +31,8 @@ public class User implements UserDetails {
     private String email;
     @Column(nullable = false)
     private String password;
-    @Column(nullable = false)
-    private String role; // guest, hosstess, admin
+    @Enumerated(EnumType.STRING)
+    private UserRole role;
     private boolean enabled;
     private String token;
     private LocalDate creationDate;
@@ -48,7 +48,7 @@ public class User implements UserDetails {
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return List.of(new SimpleGrantedAuthority(role));
+        return List.of(new SimpleGrantedAuthority(role.name()));
     }
 
     @Override

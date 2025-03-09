@@ -1,11 +1,11 @@
 package com.alejandro.OpenEarth.serviceImpl;
 
-import com.alejandro.OpenEarth.entity.Rent;
 import com.alejandro.OpenEarth.repository.UserRepository;
 import com.alejandro.OpenEarth.entity.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -23,18 +23,18 @@ public class UserService implements UserDetailsService {
     private UserRepository userRepository;
 
     @Override
-    public User loadUserByUsername(String username) throws UsernameNotFoundException {
-        Optional<User> user = userRepository.findByEmail(username);
-        if (user.isEmpty())
-            throw new UsernameNotFoundException("User not found");
-
-
-        return user.get();
+    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+        return userRepository.findByEmail(username)
+                .orElseThrow(() -> new UsernameNotFoundException("User not found"));
     }
 
     @Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
+    }
+
+    public User saveUser(User user){
+        return userRepository.save(user);
     }
 
     public List<User> getUsers(){
@@ -57,16 +57,37 @@ public class UserService implements UserDetailsService {
         return user.get();
     }
 
+    public User getUserByEmail(String email){
+        Optional<User> user = userRepository.findByEmail(email);
+        if (user.isEmpty())
+            throw new UsernameNotFoundException("User not found");
+
+        return user.get();
+    }
+
     public User updateUser(User user){
         return userRepository.save(user);
     }
 
     public void deleteUserById(Long id){
-        Optional<User> user = userRepository.findById(id);
-        if(user.isEmpty())
-            throw new UsernameNotFoundException("User not found");
-
+        User user = this.getUserById(id);
         userRepository.deleteById(id);
+    }
+
+    public void activateUserById(Long id){
+        User user = this.getUserById(id);
+        if (user.isEnabled())
+            throw new RuntimeException("User is already activated");
+
+        user.setEnabled(true);
+    }
+
+    public void deactivateUserById(Long id){
+        User user = this.getUserById(id);
+        if (!user.isEnabled())
+            throw new RuntimeException("User is already deactivated");
+
+        user.setEnabled(false);
     }
 
 }
