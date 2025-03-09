@@ -6,6 +6,7 @@ import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
 import java.util.HashSet;
+import java.util.Objects;
 import java.util.Set;
 
 @Entity
@@ -32,6 +33,7 @@ public class House {
     private double price;
     @Column(nullable = false)
     private String location;
+    private String coordinates;
     private HouseCategory category;
     private HouseStatus status;
     private LocalDate creationDate;
@@ -47,4 +49,19 @@ public class House {
     @OneToMany(mappedBy = "house", cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<Rent> rents = new HashSet<>();
 
+    @OneToMany(mappedBy = "house", cascade = CascadeType.ALL, orphanRemoval = true)
+    private Set<Review> reviews = new HashSet<>();
+
+
+    @Override
+    public boolean equals(Object o) {
+        if (!(o instanceof House house)) return false;
+        return guests == house.guests && bedrooms == house.bedrooms && beds == house.beds && bathrooms == house.bathrooms && Objects.equals(location, house.location) && Objects.equals(owner, house.owner) && Objects.equals(rents, house.rents);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(guests, bedrooms, beds, bathrooms, location, owner, rents);
+    }
 }
+

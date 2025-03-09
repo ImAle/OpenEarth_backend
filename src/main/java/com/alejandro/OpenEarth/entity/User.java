@@ -27,12 +27,13 @@ public class User implements UserDetails {
     private String firstname;
     @Column(nullable = false)
     private String lastname;
-    @Column(nullable = false)
+    @Column(nullable = false, unique = true)
     private String email;
     @Column(nullable = false)
     private String password;
     @Column(nullable = false)
     private String role; // guest, hosstess, admin
+    private boolean enabled;
     private String token;
     private LocalDate creationDate;
 
@@ -42,6 +43,8 @@ public class User implements UserDetails {
     private Set<House> houses = new HashSet<>();
     @OneToMany(mappedBy = "user" , cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<Rent> rents = new HashSet<>();
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    private Set<Review> reviews = new HashSet<>();
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
@@ -55,6 +58,6 @@ public class User implements UserDetails {
 
     @Override
     public String getUsername() {
-        return this.username;
+        return this.email;
     }
 }
