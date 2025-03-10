@@ -1,5 +1,6 @@
 package com.alejandro.OpenEarth.service;
 
+import com.alejandro.OpenEarth.dto.HouseCreationDto;
 import com.alejandro.OpenEarth.dto.HousePreviewDto;
 import com.alejandro.OpenEarth.entity.House;
 import com.alejandro.OpenEarth.entity.HouseCategory;
@@ -9,7 +10,7 @@ import java.util.List;
 import java.util.Set;
 
 public interface HouseService {
-    House create(House house);
+    House create(HouseCreationDto houseDto);
     House getHouseById(Long id);
     Set<House> getHouses();
     List<HousePreviewDto> getAllAvailableHouses();

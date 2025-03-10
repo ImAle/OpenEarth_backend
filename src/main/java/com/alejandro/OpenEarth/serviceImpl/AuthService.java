@@ -59,7 +59,7 @@ public class AuthService {
     }
     public List<String> register(User user) throws RuntimeException{
         if (userService.getUserByEmail(user.getEmail()) != null)
-            throw new RuntimeException("User already exists");
+            throw new RuntimeException("There is already an account with this email");
 
         List<String> errors = checkForErrors(user);
 

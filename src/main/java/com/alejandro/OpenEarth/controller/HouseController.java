@@ -6,12 +6,12 @@ import com.alejandro.OpenEarth.dto.HouseDetailsDto;
 import com.alejandro.OpenEarth.dto.HouseUpdateDto;
 import com.alejandro.OpenEarth.entity.House;
 import com.alejandro.OpenEarth.entity.HouseCategory;
-import com.alejandro.OpenEarth.entity.User;
 import com.alejandro.OpenEarth.service.HouseService;
-import com.alejandro.OpenEarth.serviceImpl.JwtService;
+import com.alejandro.OpenEarth.upload.StorageService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -26,12 +26,14 @@ public class HouseController {
     @Qualifier("houseService")
     private HouseService houseService;
 
-    @PostMapping("/create")
+    @Autowired
+    @Qualifier("fileService")
+    private StorageService storageService;
+
+    @PostMapping(value = "/create", consumes = {MediaType.MULTIPART_FORM_DATA_VALUE})
     public ResponseEntity<?> createHouse(@RequestBody HouseCreationDto houseDto) {
         try{
-            HouseCreationDto houseCreationDto = new HouseCreationDto();
-            House house = houseService.create(houseCreationDto.fromDtoToEntity(houseDto));
-
+            House house = houseService.create(houseDto);
             return ResponseEntity.status(HttpStatus.CREATED).body(Map.of("house", house));
         }catch (RuntimeException rtex){
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(Map.of("error", rtex.getMessage()));

@@ -6,6 +6,7 @@ import com.alejandro.OpenEarth.entity.User;
 import com.alejandro.OpenEarth.serviceImpl.UserService;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDate;
 import java.util.Set;
@@ -23,30 +24,7 @@ public class HouseCreationDto {
     private double price;
     private String location;
     private String category;
-    private Set<String> pictures;
+    private Set<MultipartFile> pictures;
     private Long idOwner;
-
-    public House fromDtoToEntity(HouseCreationDto houseDto) {
-        House house = new House();
-        house.setTitle(houseDto.getTitle());
-        house.setDescription(houseDto.getDescription());
-        house.setGuests(houseDto.getGuests());
-        house.setBedrooms(houseDto.getBedrooms());
-        house.setBeds(houseDto.getBeds());
-        house.setLocation(houseDto.getLocation());
-        house.setCategory(HouseCategory.valueOf(houseDto.getCategory()));
-        house.setPrice(houseDto.getPrice());
-        house.setCreationDate(LocalDate.now());
-        house.setLastUpdateDate(LocalDate.now());
-        house.setRents(null);
-        house.setReviews(null);
-        // lacks to set pictures
-
-        UserService userService = new UserService();
-        User user = userService.getUserById(houseDto.getIdOwner());
-        house.setOwner(user);
-
-        return house;
-    }
 
 }

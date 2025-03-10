@@ -1,15 +1,17 @@
 package com.alejandro.OpenEarth.serviceImpl;
 
+import com.alejandro.OpenEarth.dto.HouseCreationDto;
 import com.alejandro.OpenEarth.dto.HousePreviewDto;
-import com.alejandro.OpenEarth.entity.House;
-import com.alejandro.OpenEarth.entity.HouseCategory;
-import com.alejandro.OpenEarth.entity.HouseStatus;
-import com.alejandro.OpenEarth.entity.User;
+import com.alejandro.OpenEarth.entity.*;
 import com.alejandro.OpenEarth.repository.HouseRepository;
+import com.alejandro.OpenEarth.repository.PictureRepository;
 import com.alejandro.OpenEarth.service.HouseService;
+import com.alejandro.OpenEarth.service.PictureService;
+import com.alejandro.OpenEarth.upload.StorageService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDate;
 import java.util.HashSet;
@@ -25,12 +27,62 @@ public class HouseServiceImpl implements HouseService {
     private HouseRepository houseRepository;
 
     @Autowired
+    @Qualifier("fileService")
+    private StorageService storageService;
+
+    @Autowired
+    @Qualifier("pictureService")
+    private PictureService pictureService;
+
+    @Autowired
+    @Qualifier("userService")
+    private UserService userService;
+
+    @Autowired
     @Qualifier("jwtService")
     private JwtService jwtService;
 
     @Override
-    public House create(House house) {
+    public House create(HouseCreationDto houseDto) {
+        User owner = userService.getUserById(houseDto.getIdOwner());
+        House house = new House();
+
+        house.setTitle(houseDto.getTitle());
+        house.setDescription(houseDto.getDescription());
+        house.setGuests(houseDto.getGuests());
+        house.setBedrooms(houseDto.getBedrooms());
+        house.setBeds(houseDto.getBeds());
+        house.setLocation(houseDto.getLocation());
+        house.setCategory(HouseCategory.valueOf(houseDto.getCategory()));
+        house.setPrice(houseDto.getPrice());
+        house.setCreationDate(LocalDate.now());
+        house.setLastUpdateDate(LocalDate.now());
+        house.setRents(null);
+        house.setReviews(null);
+        house.setOwner(owner);
+
+        houseRepository.save(house);
+
+        Set<Picture> pictures = new HashSet<>();
+        for(MultipartFile file : houseDto.getPictures()){
+            // Save image
+            String filename = storageService.store(file, house.getId());
+
+            // Create Picture object
+            Picture picture = new Picture();
+            picture.setUrl("/api/picture" + filename);
+            picture.setHouse(house);
+            picture.setUser(null);
+
+            // Save and Add to Set<Picture>
+            pictureService.save(picture);
+            pictures.add(picture);
+        }
+
+        house.setPictures(pictures);
+
         return houseRepository.save(house);
+
     }
 
     @Override
