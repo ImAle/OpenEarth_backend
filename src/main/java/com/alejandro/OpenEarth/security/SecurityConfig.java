@@ -8,7 +8,6 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
-import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.web.SecurityFilterChain;
@@ -35,17 +34,33 @@ public class SecurityConfig {
         http.cors(cors -> cors.configurationSource(corsConfigurationSource()))
                 .csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/api/auth/**", "/picture/**").permitAll()
                         .requestMatchers(
-                                "/api/house/**"
-                        ).hasRole("USER")
+                                "/api/auth/**",
+                                "/api/house",
+                                "/api/house/categories",
+                                "/api/house/details",
+                                "/api/user/details",
+                                "/picture/**")
+                        .permitAll()
+
                         .requestMatchers(
-                                "/api/house/**"
+                                "/api/user/update"
+                        ).hasRole("GUEST")
+
+                        .requestMatchers(
+                                "/api/user/update",
+                                "/api/house/delete",
+                                "/api/house/update",
+                                "/api/house/create"
                         ).hasRole("HOSTESS")
+
                         .requestMatchers(
                                 "/api/user/activate",
-                                "/api/user/deactivate"
+                                "/api/user/deactivate",
+                                "/api/user/delete",
+                                "/api/user"
                         ).hasRole("ADMIN")
+
                         .anyRequest().authenticated())
                 .exceptionHandling(exceptions -> exceptions
                         .accessDeniedPage("/index")) // Redirect to /index if 403 error

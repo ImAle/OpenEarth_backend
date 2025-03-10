@@ -1,8 +1,12 @@
 package com.alejandro.OpenEarth.entity;
 
 import jakarta.persistence.*;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Entity
+@Data
+@NoArgsConstructor
 public class Picture {
 
     @Id

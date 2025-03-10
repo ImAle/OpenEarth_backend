@@ -1,5 +1,6 @@
 package com.alejandro.OpenEarth.entity;
 
+import com.alejandro.OpenEarth.dto.HouseCreationDto;
 import jakarta.persistence.*;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -51,7 +52,6 @@ public class House {
 
     @OneToMany(mappedBy = "house", cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<Review> reviews = new HashSet<>();
-
 
     @Override
     public boolean equals(Object o) {

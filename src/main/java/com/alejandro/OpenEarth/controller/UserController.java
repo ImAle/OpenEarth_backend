@@ -1,5 +1,6 @@
 package com.alejandro.OpenEarth.controller;
 
+import com.alejandro.OpenEarth.dto.UserDto;
 import com.alejandro.OpenEarth.entity.User;
 import com.alejandro.OpenEarth.serviceImpl.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -9,6 +10,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 import java.util.Map;
 
 @RestController
@@ -50,7 +52,13 @@ public class UserController {
     @GetMapping("")
     public ResponseEntity<?> getAllUsers() {
         try{
-            return ResponseEntity.ok().body(Map.of("users", userService.getUsers()));
+            List<User> users = userService.getUsers();
+            if(users.isEmpty())
+                return ResponseEntity.noContent().build();
+
+            List<UserDto> dtos = users.stream().map(UserDto::new).toList();
+
+            return ResponseEntity.ok().body(Map.of("users", dtos));
         }catch (RuntimeException rtex){
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(Map.of("Error", rtex.getMessage()));
         }
@@ -59,7 +67,8 @@ public class UserController {
     @GetMapping("/details")
     public ResponseEntity<?> getUserDetails(@RequestParam("id") long userId){
         try{
-            return ResponseEntity.ok().body(Map.of("user", userService.getUserById(userId)));
+            User user = userService.getUserById(userId);
+            return ResponseEntity.ok().body(Map.of("user", new UserDto(user)));
         }catch(RuntimeException rtex){
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(Map.of("Error", rtex.getMessage()));
         }
@@ -76,8 +85,11 @@ public class UserController {
     }
 
     @PutMapping("/update")
-    public ResponseEntity<?> updateUser(@RequestBody User user){
+    public ResponseEntity<?> updateUser(@RequestHeader("Authorization") String token, @RequestBody User user){
         try{
+            if (!userService.thatIsMe(token, user))
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(Map.of("message", "You are not allowed to update someone else"));
+
             userService.updateUser(user);
             return ResponseEntity.ok().body(Map.of("message", "The user has been updated successfully"));
         }catch (Exception ex){

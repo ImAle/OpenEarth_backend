@@ -22,6 +22,10 @@ public class UserService implements UserDetailsService {
     @Qualifier("userRepository")
     private UserRepository userRepository;
 
+    @Autowired
+    @Qualifier("jwtService")
+    private JwtService jwtService;
+
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         return userRepository.findByEmail(username)
@@ -44,7 +48,7 @@ public class UserService implements UserDetailsService {
     public User getUserById(Long id){
         Optional<User> user = userRepository.findById(id);
         if(user.isEmpty())
-            throw new UsernameNotFoundException("User not found");
+            throw new RuntimeException("User not found");
 
         return user.get();
     }
@@ -72,14 +76,21 @@ public class UserService implements UserDetailsService {
     public void deleteUserById(Long id){
         User user = this.getUserById(id);
         userRepository.deleteById(id);
+
     }
 
-    public void activateUserById(Long id){
+    public boolean thatIsMe(String token, User user){
+        User tokenUser = jwtService.getUser(token);
+        return tokenUser.equals(user);
+    }
+
+    public void activateUserById(Long id) {
         User user = this.getUserById(id);
         if (user.isEnabled())
             throw new RuntimeException("User is already activated");
 
         user.setEnabled(true);
+        this.saveUser(user);
     }
 
     public void deactivateUserById(Long id){
@@ -88,6 +99,7 @@ public class UserService implements UserDetailsService {
             throw new RuntimeException("User is already deactivated");
 
         user.setEnabled(false);
+        this.saveUser(user);
     }
 
 }
