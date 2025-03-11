@@ -7,7 +7,6 @@ import lombok.NoArgsConstructor;
 import java.time.LocalDate;
 import java.util.HashSet;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 @Data
 @NoArgsConstructor
@@ -26,7 +25,7 @@ public class HouseDetailsDto {
     private HouseCategory category;
     private HouseStatus status;
     private LocalDate creationDate;
-    private Set<String> pictures;
+    private Set<PictureDto> pictures = new HashSet<>();
     private UserDto owner;
     private Set<Review> reviews = new HashSet<>();
 
@@ -44,11 +43,16 @@ public class HouseDetailsDto {
         this.category = house.getCategory();
         this.status = house.getStatus();
         this.creationDate = house.getCreationDate();
-        this.setPictures(house.getPictures()
-                .stream().map(Picture::getUrl)
-                .collect(Collectors.toSet()));
         this.setOwner(new UserDto(house.getOwner()));
         this.setReviews(house.getReviews());
+
+        Set<PictureDto> pictures = new HashSet<>();
+        for(Picture picture : house.getPictures()){
+            pictures.add(new PictureDto(picture.getId(), picture.getUrl()));
+        }
+
+        this.setPictures(pictures);
+
     }
 
 }

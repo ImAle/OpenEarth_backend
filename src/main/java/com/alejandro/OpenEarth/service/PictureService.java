@@ -8,6 +8,9 @@ import org.springframework.web.multipart.MultipartFile;
 public interface PictureService {
     Picture save(Picture picture);
     Picture createHousePicture(String filename, House house);
+    Picture createUserPicture(String filename, User user);
+    Picture getPictureById(Long id);
     void delete(Picture picture);
     void updateUserPicture(MultipartFile dtoPicture, User user);
+    void updateHousePicture(MultipartFile dtoPicture, House house);
 }

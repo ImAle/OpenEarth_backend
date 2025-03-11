@@ -20,7 +20,7 @@ public class HousePreviewDto {
     private double price;
     private Set<String> pictures = new HashSet<>();
 
-    public HousePreviewDto fromEntityToDto(House house){
+    public HousePreviewDto(House house){
         HousePreviewDto dto = new HousePreviewDto();
         dto.setId(house.getId());
         dto.setTitle(house.getTitle());
@@ -30,7 +30,5 @@ public class HousePreviewDto {
         dto.setPictures(house.getPictures()
                 .stream().map(Picture::getUrl)
                 .collect(Collectors.toSet()));
-
-        return dto;
     }
 }

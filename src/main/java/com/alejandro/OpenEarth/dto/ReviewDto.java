@@ -18,6 +18,12 @@ public class ReviewDto {
     @NotBlank
     private Long userId;
 
+    public ReviewDto(Review review) {
+        this.comment = review.getComment();
+        this.houseId = review.getHouse().getId();
+        this.userId = review.getUser().getId();
+    }
+
     public Review fromDtoToEntity(ReviewDto dto) {
         HouseServiceImpl houseService = new HouseServiceImpl();
         UserService userService = new UserService();

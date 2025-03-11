@@ -1,9 +1,6 @@
 package com.alejandro.OpenEarth.controller;
 
-import com.alejandro.OpenEarth.dto.HouseCreationDto;
-import com.alejandro.OpenEarth.dto.HousePreviewDto;
-import com.alejandro.OpenEarth.dto.HouseDetailsDto;
-import com.alejandro.OpenEarth.dto.HouseUpdateDto;
+import com.alejandro.OpenEarth.dto.*;
 import com.alejandro.OpenEarth.entity.House;
 import com.alejandro.OpenEarth.entity.HouseCategory;
 import com.alejandro.OpenEarth.service.HouseService;
@@ -34,10 +31,10 @@ public class HouseController {
 
     @PostMapping(value = "/create", consumes = {MediaType.MULTIPART_FORM_DATA_VALUE})
     public ResponseEntity<?> createHouse(@Valid @RequestBody HouseCreationDto houseDto, BindingResult result) {
-        if(result.hasErrors())
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(result.getAllErrors());
-
         try{
+            if(result.hasErrors())
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(result.getAllErrors());
+
             House house = houseService.create(houseDto);
             return ResponseEntity.status(HttpStatus.CREATED).body(Map.of("house", house));
         }catch (RuntimeException rtex){
@@ -50,12 +47,18 @@ public class HouseController {
     @GetMapping("")
     public ResponseEntity<?> getHouses() {
         List<HousePreviewDto> houses = houseService.getAllAvailableHouses();
+        if(houses.isEmpty())
+            return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+
         return ResponseEntity.ok().body(Map.of("houses", houses));
     }
 
     @GetMapping("/categories")
     public ResponseEntity<?> getCategories() {
         HouseCategory[] categories = houseService.getHouseCategories();
+        if(categories.length == 0)
+            return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+
         return ResponseEntity.ok().body(Map.of("categories", categories));
     }
 
@@ -66,8 +69,7 @@ public class HouseController {
 
             // if the owner tries to see his own house
             if(houseService.isMyHouse(token, houseId)){
-                HouseUpdateDto houseUpdateDto = new HouseUpdateDto();
-                return ResponseEntity.ok().body(Map.of("house", houseUpdateDto.fromEntityToDto(house)));
+                return ResponseEntity.ok().body(Map.of("house", new HouseUpdateFormDto(house)));
             }
 
             return ResponseEntity.ok().body(Map.of("house", new HouseDetailsDto(house)));
@@ -80,16 +82,14 @@ public class HouseController {
 
     @PutMapping("/update")
     public ResponseEntity<?> updateHouse(@RequestHeader("Authorization") String token, @Valid @RequestBody HouseUpdateDto houseDto, BindingResult result, @RequestParam("id") Long id) {
-        if(result.hasErrors())
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(result.getAllErrors());
-
         try{
+            if(result.hasErrors())
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(result.getAllErrors());
+
             if(!houseService.isMyHouse(token, id))
                 return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(Map.of("error", "You can not edit this house"));
 
-            HouseUpdateDto houseUpdateDto = new HouseUpdateDto();
-            House house = houseUpdateDto.fromDtoToEntity(houseDto, id);
-            houseService.updateHouse(house);
+            House house = houseService.updateHouse(houseDto, id);
 
             return ResponseEntity.ok().body(Map.of("house", house));
         }catch (RuntimeException rtex){

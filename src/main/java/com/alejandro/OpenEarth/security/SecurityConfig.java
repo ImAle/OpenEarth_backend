@@ -35,13 +35,13 @@ public class SecurityConfig {
                 .csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(
+                                "/api/picture/**",
                                 "/api/auth/**",
                                 "/api/house",
                                 "/api/house/categories",
                                 "/api/house/details",
-                                "/api/user/details",
-                                "/picture/**")
-                        .permitAll()
+                                "/api/user/details"
+                                ).permitAll()
 
                         .requestMatchers(
                                 "/api/user/update"

@@ -2,9 +2,9 @@ package com.alejandro.OpenEarth.serviceImpl;
 
 import com.alejandro.OpenEarth.dto.HouseCreationDto;
 import com.alejandro.OpenEarth.dto.HousePreviewDto;
+import com.alejandro.OpenEarth.dto.HouseUpdateDto;
 import com.alejandro.OpenEarth.entity.*;
 import com.alejandro.OpenEarth.repository.HouseRepository;
-import com.alejandro.OpenEarth.repository.PictureRepository;
 import com.alejandro.OpenEarth.service.HouseService;
 import com.alejandro.OpenEarth.service.PictureService;
 import com.alejandro.OpenEarth.upload.StorageService;
@@ -69,8 +69,6 @@ public class HouseServiceImpl implements HouseService {
             String filename = storageService.store(file, house.getId());
 
             Picture picture = pictureService.createHousePicture(filename, house);
-
-            // Save and Add to Set<Picture>
             pictureService.save(picture);
             pictures.add(picture);
         }
@@ -97,11 +95,8 @@ public class HouseServiceImpl implements HouseService {
 
     @Override
     public List<HousePreviewDto> getAllAvailableHouses() {
-        HousePreviewDto housePreviewDto = new HousePreviewDto();
-        Set<House> houses = houseRepository.findByStatus(HouseStatus.AVAILABLE);
-        List<HousePreviewDto> dtos = houses.stream().map(housePreviewDto::fromEntityToDto).toList();
-
-        return dtos;
+        Set<House> houses = houseRepository.findByStatusAndEnabledOwners(HouseStatus.AVAILABLE);
+        return houses.stream().map(HousePreviewDto::new).toList();
     }
 
     @Override
@@ -128,8 +123,28 @@ public class HouseServiceImpl implements HouseService {
     }
 
     @Override
-    public House updateHouse(House house) {
+    public House updateHouse(HouseUpdateDto houseDto, Long id) {
+        House house = this.getHouseById(id);
+
+        house.setTitle(houseDto.getTitle());
+        house.setDescription(houseDto.getDescription());
+        house.setGuests(houseDto.getGuests());
+        house.setBedrooms(houseDto.getBedrooms());
+        house.setBeds(houseDto.getBeds());
+        house.setBathrooms(houseDto.getBathrooms());
+        house.setPrice(houseDto.getPrice());
+        house.setCategory(HouseCategory.valueOf(houseDto.getCategory()));
+        house.setStatus(HouseStatus.valueOf(houseDto.getStatus()));
+
+        Set<MultipartFile> pictures = houseDto.getNewPictures();
+        if(pictures!=null && !pictures.isEmpty()) {
+            for(MultipartFile picture : pictures) {
+                pictureService.updateHousePicture(picture, house);
+            }
+        }
+
         house.setLastUpdateDate(LocalDate.now());
+
         return houseRepository.save(house);
     }
 

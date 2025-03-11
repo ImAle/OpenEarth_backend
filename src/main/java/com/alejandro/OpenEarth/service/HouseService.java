@@ -2,6 +2,7 @@ package com.alejandro.OpenEarth.service;
 
 import com.alejandro.OpenEarth.dto.HouseCreationDto;
 import com.alejandro.OpenEarth.dto.HousePreviewDto;
+import com.alejandro.OpenEarth.dto.HouseUpdateDto;
 import com.alejandro.OpenEarth.entity.House;
 import com.alejandro.OpenEarth.entity.HouseCategory;
 import com.alejandro.OpenEarth.entity.HouseStatus;
@@ -18,6 +19,6 @@ public interface HouseService {
     List<Long> getIdHousesByOwnerId(Long ownerId);
     boolean isMyHouse(String token, Long houseId);
     HouseCategory[] getHouseCategories();
-    House updateHouse(House house);
+    House updateHouse(HouseUpdateDto houseDto, Long id);
     void deleteHouseById(Long id);
 }

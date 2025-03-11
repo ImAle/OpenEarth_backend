@@ -13,6 +13,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.util.Optional;
 
 @Service("pictureService")
 public class PictureServiceImpl implements PictureService {
@@ -36,11 +37,20 @@ public class PictureServiceImpl implements PictureService {
 
     @Override
     public Picture createHousePicture(String filename, House house) {
-        Picture picture = new Picture();
-        picture.setUrl(pictureConfiguration.getUrlPrefix() + filename);
-        picture.setHouse(house);
-        picture.setUser(null);
-        return picture;
+        return new Picture(pictureConfiguration.getUrlPrefix() + filename, house);
+    }
+
+    @Override
+    public Picture createUserPicture(String filename, User user) {
+        return new Picture(pictureConfiguration.getUrlPrefix() + filename, user);
+    }
+
+    @Override
+    public Picture getPictureById(Long id) {
+        Optional<Picture> picture = pictureRepository.findById(id);
+        if(picture.isEmpty())
+            throw new RuntimeException("Picture not found");
+        return picture.get();
     }
 
     @Override
@@ -48,7 +58,7 @@ public class PictureServiceImpl implements PictureService {
         if (picture != null) {
             String filename = picture.getUrl().substring(pictureConfiguration.getUrlPrefix().length());
             try {
-                storageService.delete(filename); // Deletes image form the storage
+                storageService.delete(filename); // Deletes image from the storage
                 pictureRepository.delete(picture);
             } catch (IOException e) {
                 System.err.println("Error deleting picture: " + e.getMessage());
@@ -59,12 +69,17 @@ public class PictureServiceImpl implements PictureService {
     @Override
     public void updateUserPicture(MultipartFile dtoPicture, User user){
         String filename = storageService.store(dtoPicture, user.getId());
-        Picture picture = new Picture();
-        picture.setUrl(pictureConfiguration.getUrlPrefix() + filename);
-        picture.setUser(user);
-        picture.setHouse(null);
+        Picture picture = this.createUserPicture(filename, user);
         this.save(picture);
         user.setPicture(picture);
+    }
+
+    @Override
+    public void updateHousePicture(MultipartFile dtoPicture, House house) {
+        String filename = storageService.store(dtoPicture, Long.getLong(house.getOwner().getId() + "" + house.getId()));
+        Picture picture = this.createHousePicture(filename, house);
+        this.save(picture);
+        house.getPictures().add(picture);
     }
 
 

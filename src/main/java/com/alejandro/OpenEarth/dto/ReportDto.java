@@ -7,9 +7,6 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.stereotype.Component;
 
 @Data
 @NoArgsConstructor
@@ -22,6 +19,13 @@ public class ReportDto {
     private Long reportedId;
     @NotBlank
     private Long reporterId;
+
+    public ReportDto(Report report) {
+        this.comment = report.getComment();
+        this.reportedId = report.getReported().getId();
+        this.reporterId = report.getReporter().getId();
+
+    }
 
     public Report fromDtoToEntity(ReportDto reportDto) {
         Report report = new Report();

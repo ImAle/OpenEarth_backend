@@ -22,4 +22,17 @@ public class Picture {
     @OneToOne
     @JoinColumn(name="user_id", unique = true)
     private User user;
+
+    public Picture(String url, User user) {
+        this.url = url;
+        this.user = user;
+        this.house = null;
+    }
+
+    public Picture(String url, House house) {
+        this.url = url;
+        this.user = null;
+        this.house = house;
+    }
+
 }

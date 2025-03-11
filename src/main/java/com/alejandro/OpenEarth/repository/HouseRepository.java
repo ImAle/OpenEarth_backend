@@ -16,4 +16,7 @@ public interface HouseRepository extends JpaRepository<House, Long> {
 
     @Query("SELECT h.id FROM House h WHERE h.owner.id = :ownerId")
     List<Long> findHousesIdByOwnerId(@Param("ownerId") Long ownerId);
+
+    @Query("SELECT h FROM House h WHERE h.status = :status AND h.owner.enabled = true")
+    Set<House> findByStatusAndEnabledOwners(@Param("status") HouseStatus status);
 }
