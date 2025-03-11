@@ -1,16 +1,22 @@
 package com.alejandro.OpenEarth.serviceImpl;
 
+import com.alejandro.OpenEarth.dto.UserUpdateDto;
+import com.alejandro.OpenEarth.entity.Picture;
 import com.alejandro.OpenEarth.repository.UserRepository;
 import com.alejandro.OpenEarth.entity.User;
+import com.alejandro.OpenEarth.service.PictureService;
+import com.alejandro.OpenEarth.upload.StorageService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
+import org.springframework.security.core.parameters.P;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 import java.util.Optional;
@@ -21,6 +27,10 @@ public class UserService implements UserDetailsService {
     @Autowired
     @Qualifier("userRepository")
     private UserRepository userRepository;
+
+    @Autowired
+    @Qualifier("pictureService")
+    private PictureService pictureService;
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
@@ -65,14 +75,10 @@ public class UserService implements UserDetailsService {
         return user.get();
     }
 
-    public User updateUser(User user){
-        return userRepository.save(user);
-    }
-
     public void deleteUserById(Long id){
         User user = this.getUserById(id);
-        userRepository.deleteById(id);
-
+        pictureService.delete(user.getPicture());
+        userRepository.delete(user);
     }
 
     public void activateUserById(Long id) {

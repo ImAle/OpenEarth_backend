@@ -20,6 +20,7 @@ public class UserCreationDto {
     @NotBlank(message = "Email is required")
     private String email;
     @NotBlank(message = "Password is required")
+    @Size(min = 8, message = "Password must be higher than 8 characters")
     private String password;
     @NotBlank(message = "Password Confirmation is required")
     private String passwordConfirmation;

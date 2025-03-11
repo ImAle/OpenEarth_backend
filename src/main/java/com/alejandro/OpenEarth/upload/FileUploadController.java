@@ -18,7 +18,7 @@ public class FileUploadController {
 		this.storageService = storageService;
 	}
 	
-	@GetMapping("/picture/{filename}")
+	@GetMapping("/api/picture/{filename}")
 	@ResponseBody
 	public ResponseEntity<Resource> serveFile(@PathVariable String filename) {
 
@@ -30,7 +30,7 @@ public class FileUploadController {
 		return ResponseEntity.ok().body(file);
 	}
 
-	@PostMapping("/")
+	@PostMapping("/api/")
 	public String handleFileUpload(@RequestParam("file") MultipartFile file, Long idFile,
 								   RedirectAttributes redirectAttributes) {
 

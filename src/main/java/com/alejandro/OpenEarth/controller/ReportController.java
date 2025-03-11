@@ -3,10 +3,12 @@ package com.alejandro.OpenEarth.controller;
 import com.alejandro.OpenEarth.dto.ReportDto;
 import com.alejandro.OpenEarth.entity.Report;
 import com.alejandro.OpenEarth.service.ReportService;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -21,7 +23,10 @@ public class ReportController {
     private ReportService reportService;
 
     @PostMapping("/create")
-    public ResponseEntity<?> createReport(@RequestBody ReportDto reportDto) {
+    public ResponseEntity<?> createReport(@Valid @RequestBody ReportDto reportDto, BindingResult result) {
+        if(result.hasErrors())
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(result.getAllErrors());
+
         try{
             ReportDto dto = new ReportDto();
             Report report = dto.fromDtoToEntity(reportDto);

@@ -68,11 +68,7 @@ public class HouseServiceImpl implements HouseService {
             // Save image
             String filename = storageService.store(file, house.getId());
 
-            // Create Picture object
-            Picture picture = new Picture();
-            picture.setUrl("/api/picture/" + filename);
-            picture.setHouse(house);
-            picture.setUser(null);
+            Picture picture = pictureService.createHousePicture(filename, house);
 
             // Save and Add to Set<Picture>
             pictureService.save(picture);
@@ -142,6 +138,9 @@ public class HouseServiceImpl implements HouseService {
         Optional<House> house = houseRepository.findById(id);
         if (house.isEmpty())
             throw new RuntimeException("House not found");
+
+        for(Picture picture : house.get().getPictures())
+            pictureService.delete(picture);
 
         houseRepository.deleteById(id);
     }

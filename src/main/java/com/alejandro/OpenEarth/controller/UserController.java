@@ -1,7 +1,9 @@
 package com.alejandro.OpenEarth.controller;
 
 import com.alejandro.OpenEarth.dto.UserDto;
+import com.alejandro.OpenEarth.dto.UserUpdateDto;
 import com.alejandro.OpenEarth.entity.User;
+import com.alejandro.OpenEarth.serviceImpl.AuthService;
 import com.alejandro.OpenEarth.serviceImpl.JwtService;
 import com.alejandro.OpenEarth.serviceImpl.UserService;
 import jakarta.validation.Valid;
@@ -27,6 +29,8 @@ public class UserController {
     @Autowired
     @Qualifier("jwtService")
     private JwtService jwtService;
+    @Autowired
+    private AuthService authService;
 
     @PostMapping("/activate")
     public ResponseEntity<?> activateUser(@RequestParam("id") long userId){
@@ -92,15 +96,15 @@ public class UserController {
     }
 
     @PutMapping("/update")
-    public ResponseEntity<?> updateUser(@RequestHeader("Authorization") String token, @Valid @RequestBody User user, BindingResult result){
+    public ResponseEntity<?> updateUser(@RequestHeader("Authorization") String token, @Valid @RequestBody UserUpdateDto userDto, BindingResult result, @RequestParam("id") Long id){
         if(result.hasErrors())
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(result.getAllErrors());
 
         try{
-            if (!jwtService.thatIsMe(token, user))
+            if (!jwtService.isThatMe(token, id))
                 return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(Map.of("message", "You are not allowed to update someone else"));
 
-            userService.updateUser(user);
+            authService.updateUser(userDto, id);
             return ResponseEntity.ok().body(Map.of("message", "The user has been updated successfully"));
         }catch (Exception ex){
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(Map.of("Error", ex.getMessage()));

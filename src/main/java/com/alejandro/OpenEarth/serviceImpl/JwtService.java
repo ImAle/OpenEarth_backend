@@ -83,7 +83,8 @@ public class JwtService {
         return role.equals(UserRole.HOSTESS);
     }
 
-    public boolean thatIsMe(String token, User user){
+    public boolean isThatMe(String token, Long userId){
+        User user = userService.getUserById(userId);
         User tokenUser = this.getUser(token);
         return tokenUser.equals(user);
     }
