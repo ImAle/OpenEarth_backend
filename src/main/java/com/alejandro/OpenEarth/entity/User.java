@@ -21,7 +21,7 @@ public class User implements UserDetails {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    @Column(nullable = false, unique = true)
+    @Column(nullable = false, unique = true, length = 15)
     private String username;
     @Column(nullable = false)
     private String firstname;
@@ -32,9 +32,12 @@ public class User implements UserDetails {
     @Column(nullable = false)
     private String password;
     @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
     private UserRole role;
+    @Column(nullable = false)
     private boolean enabled;
     private String token;
+    @Column(nullable = false)
     private LocalDate creationDate;
 
     @OneToOne(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)

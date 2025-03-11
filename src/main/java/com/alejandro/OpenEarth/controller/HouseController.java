@@ -8,11 +8,13 @@ import com.alejandro.OpenEarth.entity.House;
 import com.alejandro.OpenEarth.entity.HouseCategory;
 import com.alejandro.OpenEarth.service.HouseService;
 import com.alejandro.OpenEarth.upload.StorageService;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -31,7 +33,10 @@ public class HouseController {
     private StorageService storageService;
 
     @PostMapping(value = "/create", consumes = {MediaType.MULTIPART_FORM_DATA_VALUE})
-    public ResponseEntity<?> createHouse(@RequestBody HouseCreationDto houseDto) {
+    public ResponseEntity<?> createHouse(@Valid @RequestBody HouseCreationDto houseDto, BindingResult result) {
+        if(result.hasErrors())
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(result.getAllErrors());
+
         try{
             House house = houseService.create(houseDto);
             return ResponseEntity.status(HttpStatus.CREATED).body(Map.of("house", house));
@@ -74,13 +79,16 @@ public class HouseController {
     }
 
     @PutMapping("/update")
-    public ResponseEntity<?> updateHouse(@RequestHeader("Authorization") String token, @RequestBody HouseUpdateDto houseDto) {
+    public ResponseEntity<?> updateHouse(@RequestHeader("Authorization") String token, @Valid @RequestBody HouseUpdateDto houseDto, BindingResult result, @RequestParam("id") Long id) {
+        if(result.hasErrors())
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(result.getAllErrors());
+
         try{
-            if(!houseService.isMyHouse(token, houseDto.getId()))
+            if(!houseService.isMyHouse(token, id))
                 return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(Map.of("error", "You can not edit this house"));
 
             HouseUpdateDto houseUpdateDto = new HouseUpdateDto();
-            House house = houseUpdateDto.fromDtoToEntity(houseDto);
+            House house = houseUpdateDto.fromDtoToEntity(houseDto, id);
             houseService.updateHouse(house);
 
             return ResponseEntity.ok().body(Map.of("house", house));

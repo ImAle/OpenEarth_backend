@@ -22,10 +22,6 @@ public class UserService implements UserDetailsService {
     @Qualifier("userRepository")
     private UserRepository userRepository;
 
-    @Autowired
-    @Qualifier("jwtService")
-    private JwtService jwtService;
-
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         return userRepository.findByEmail(username)
@@ -77,11 +73,6 @@ public class UserService implements UserDetailsService {
         User user = this.getUserById(id);
         userRepository.deleteById(id);
 
-    }
-
-    public boolean thatIsMe(String token, User user){
-        User tokenUser = jwtService.getUser(token);
-        return tokenUser.equals(user);
     }
 
     public void activateUserById(Long id) {

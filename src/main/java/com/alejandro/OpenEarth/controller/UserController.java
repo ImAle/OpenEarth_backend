@@ -2,12 +2,15 @@ package com.alejandro.OpenEarth.controller;
 
 import com.alejandro.OpenEarth.dto.UserDto;
 import com.alejandro.OpenEarth.entity.User;
+import com.alejandro.OpenEarth.serviceImpl.JwtService;
 import com.alejandro.OpenEarth.serviceImpl.UserService;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -20,6 +23,10 @@ public class UserController {
     @Autowired
     @Qualifier("userService")
     private UserService userService;
+
+    @Autowired
+    @Qualifier("jwtService")
+    private JwtService jwtService;
 
     @PostMapping("/activate")
     public ResponseEntity<?> activateUser(@RequestParam("id") long userId){
@@ -85,9 +92,12 @@ public class UserController {
     }
 
     @PutMapping("/update")
-    public ResponseEntity<?> updateUser(@RequestHeader("Authorization") String token, @RequestBody User user){
+    public ResponseEntity<?> updateUser(@RequestHeader("Authorization") String token, @Valid @RequestBody User user, BindingResult result){
+        if(result.hasErrors())
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(result.getAllErrors());
+
         try{
-            if (!userService.thatIsMe(token, user))
+            if (!jwtService.thatIsMe(token, user))
                 return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(Map.of("message", "You are not allowed to update someone else"));
 
             userService.updateUser(user);

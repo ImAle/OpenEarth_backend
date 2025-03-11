@@ -70,7 +70,7 @@ public class HouseServiceImpl implements HouseService {
 
             // Create Picture object
             Picture picture = new Picture();
-            picture.setUrl("/api/picture" + filename);
+            picture.setUrl("/api/picture/" + filename);
             picture.setHouse(house);
             picture.setUser(null);
 

@@ -1,6 +1,7 @@
 package com.alejandro.OpenEarth.serviceImpl;
 
 import com.alejandro.OpenEarth.entity.User;
+import com.alejandro.OpenEarth.entity.UserRole;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
@@ -62,35 +63,28 @@ public class JwtService {
     }
 
     public boolean isAdmin(String token){
-        boolean respuesta = false;
-
         token = token.replace("Bearer ","");
+        UserRole role = getUser(token).getRole();
 
-        if (getUser(token).getRole().equals("ROLE_ADMIN"))
-            respuesta = true;
-
-        return respuesta;
+        return role.equals(UserRole.ADMIN);
     }
 
     public boolean isGuest(String token){
-        boolean respuesta = false;
-
         token = token.replace("Bearer ","");
+        UserRole role = getUser(token).getRole();
 
-        if (getUser(token).getRole().equals("ROLE_GUEST"))
-            respuesta = true;
-
-        return respuesta;
+        return role.equals(UserRole.GUEST);
     }
 
     public boolean isHostess(String token){
-        boolean respuesta = false;
-
         token = token.replace("Bearer ","");
+        UserRole role = getUser(token).getRole();
 
-        if (getUser(token).getRole().equals("ROLE_HOSTESS"))
-            respuesta = true;
+        return role.equals(UserRole.HOSTESS);
+    }
 
-        return respuesta;
+    public boolean thatIsMe(String token, User user){
+        User tokenUser = this.getUser(token);
+        return tokenUser.equals(user);
     }
 }
