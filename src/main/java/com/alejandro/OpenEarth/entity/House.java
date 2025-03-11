@@ -32,6 +32,9 @@ public class House {
     private int bathrooms;
     @Column(nullable = false)
     private double price;
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private Country country;
     @Column(nullable = false)
     private String location;
     private String coordinates;

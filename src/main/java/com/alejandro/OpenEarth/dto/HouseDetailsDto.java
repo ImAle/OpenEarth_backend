@@ -20,6 +20,7 @@ public class HouseDetailsDto {
     private int beds;
     private int bathrooms;
     private double price;
+    private String country;
     private String location;
     private String coordinates;
     private HouseCategory category;
@@ -38,6 +39,7 @@ public class HouseDetailsDto {
         this.beds = house.getBeds();
         this.bathrooms = house.getBathrooms();
         this.price = house.getPrice();
+        this.country = house.getCountry().getFormattedName();
         this.location = house.getLocation();
         this.coordinates = house.getCoordinates();
         this.category = house.getCategory();

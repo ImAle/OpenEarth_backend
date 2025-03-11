@@ -100,6 +100,12 @@ public class HouseServiceImpl implements HouseService {
     }
 
     @Override
+    public List<HousePreviewDto> getFilteredHouses(Country country, double minPrice, double maxPrice, Integer beds, Integer guests, HouseCategory category) {
+        List<House> houses = houseRepository.findHousesByFilters(country, minPrice, maxPrice, beds, guests, category);
+        return houses.stream().map(HousePreviewDto::new).toList();
+    }
+
+    @Override
     public HouseStatus[] getHouseStatuses() {
         return HouseStatus.values();
     }

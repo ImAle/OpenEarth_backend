@@ -1,6 +1,7 @@
 package com.alejandro.OpenEarth.controller;
 
 import com.alejandro.OpenEarth.dto.*;
+import com.alejandro.OpenEarth.entity.Country;
 import com.alejandro.OpenEarth.entity.House;
 import com.alejandro.OpenEarth.entity.HouseCategory;
 import com.alejandro.OpenEarth.service.HouseService;
@@ -25,10 +26,6 @@ public class HouseController {
     @Qualifier("houseService")
     private HouseService houseService;
 
-    @Autowired
-    @Qualifier("fileService")
-    private StorageService storageService;
-
     @PostMapping(value = "/create", consumes = {MediaType.MULTIPART_FORM_DATA_VALUE})
     public ResponseEntity<?> createHouse(@Valid @RequestBody HouseCreationDto houseDto, BindingResult result) {
         try{
@@ -45,8 +42,12 @@ public class HouseController {
     }
 
     @GetMapping("")
-    public ResponseEntity<?> getHouses() {
-        List<HousePreviewDto> houses = houseService.getAllAvailableHouses();
+    public ResponseEntity<?> getHouses(@RequestParam(required = false) Country country, @RequestParam(required = false) Double minPrice,
+                                       @RequestParam(required = false) Double maxPrice, @RequestParam(required = false) Integer beds,
+                                       @RequestParam(required = false) Integer guests, @RequestParam(required = false) HouseCategory category) {
+
+        List<HousePreviewDto> houses = houseService.getFilteredHouses(country, minPrice, maxPrice, beds, guests, category);
+
         if(houses.isEmpty())
             return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
 

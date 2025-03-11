@@ -15,6 +15,7 @@ public class HousePreviewDto {
 
     private Long id;
     private String title;
+    private String country;
     private String location;
     private String coordinates;
     private double price;
@@ -24,6 +25,7 @@ public class HousePreviewDto {
         HousePreviewDto dto = new HousePreviewDto();
         dto.setId(house.getId());
         dto.setTitle(house.getTitle());
+        dto.setCountry(house.getCountry().getFormattedName());
         dto.setLocation(house.getLocation());
         dto.setCoordinates(house.getCoordinates());
         dto.setPrice(house.getPrice());

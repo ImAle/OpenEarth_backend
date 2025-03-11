@@ -1,5 +1,6 @@
 package com.alejandro.OpenEarth.dto;
 
+import com.alejandro.OpenEarth.entity.Country;
 import com.alejandro.OpenEarth.entity.HouseCategory;
 import com.alejandro.OpenEarth.validation.ValidEnum;
 import jakarta.validation.constraints.NotBlank;
@@ -35,6 +36,8 @@ public class HouseCreationDto {
     @NotBlank(message = "Price is required")
     @Size(min = 1, message = "Price must be higher than 1")
     private double price;
+    @ValidEnum(enumClass = Country.class, message = "Invalid country")
+    private Country country;
     @NotBlank(message = "Location is required")
     @Size(min = 6, message = "Provide a valid location")
     private String location;
