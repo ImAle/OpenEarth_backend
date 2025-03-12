@@ -44,14 +44,19 @@ public class SecurityConfig {
                                 ).permitAll()
 
                         .requestMatchers(
-                                "/api/user/update"
+                                "/api/user/update",
+                                "/api/rent/myRents",
+                                "/api/rent/cancel",
+                                "/api/rent/create"
                         ).hasRole("GUEST")
 
                         .requestMatchers(
                                 "/api/user/update",
                                 "/api/house/delete",
                                 "/api/house/update",
-                                "/api/house/create"
+                                "/api/house/create",
+                                "/api/rent/house",
+                                "/api/rent/houses"
                         ).hasRole("HOSTESS")
 
                         .requestMatchers(

@@ -121,6 +121,11 @@ public class HouseServiceImpl implements HouseService {
     }
 
     @Override
+    public Set<House> getHousesofLoggedUser(String token){
+        return jwtService.getUser(token).getHouses();
+    }
+
+    @Override
     public boolean isMyHouse(String token, Long houseId) {
         User user = jwtService.getUser(token);
         List<Long> myHouses = houseRepository.findHousesIdByOwnerId(user.getId());

@@ -19,6 +19,7 @@ public interface HouseService {
     List<HousePreviewDto> getFilteredHouses(Country country, double minPrice, double maxPrice, Integer beds, Integer guests, HouseCategory category);
     HouseStatus[] getHouseStatuses();
     List<Long> getIdHousesByOwnerId(Long ownerId);
+    Set<House> getHousesofLoggedUser(String token);
     boolean isMyHouse(String token, Long houseId);
     HouseCategory[] getHouseCategories();
     House updateHouse(HouseUpdateDto houseDto, Long id);
