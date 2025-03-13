@@ -7,10 +7,12 @@ import com.alejandro.OpenEarth.entity.Rent;
 import com.alejandro.OpenEarth.service.HouseService;
 import com.alejandro.OpenEarth.service.RentService;
 import com.alejandro.OpenEarth.serviceImpl.JwtService;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -34,8 +36,11 @@ public class RentController {
     private JwtService jwtService;
 
     @PostMapping("/create")
-    public ResponseEntity<?> createRent(@RequestHeader("Authorization") String token, @RequestBody RentCreationDto rentDto) {
+    public ResponseEntity<?> createRent(@RequestHeader("Authorization") String token, @Valid @RequestBody RentCreationDto rentDto, BindingResult result) {
         try{
+            if(result.hasErrors())
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(result.getAllErrors());
+
             if(!jwtService.isGuest(token))
                 return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("You are not allowed to perform this operation");
 

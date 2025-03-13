@@ -4,6 +4,7 @@ import com.alejandro.OpenEarth.dto.UserCreationDto;
 import com.alejandro.OpenEarth.dto.UserUpdateDto;
 import com.alejandro.OpenEarth.entity.Picture;
 import com.alejandro.OpenEarth.entity.User;
+import com.alejandro.OpenEarth.service.EmailService;
 import com.alejandro.OpenEarth.service.PictureService;
 import com.alejandro.OpenEarth.upload.StorageService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -35,6 +36,10 @@ public class AuthService {
     @Autowired
     @Qualifier("jwtService")
     private JwtService jwtService;
+
+    @Autowired
+    @Qualifier("emailService")
+    private EmailService emailService;
 
     public String login(String email, String password) {
         Authentication authentication = authenticationManager.authenticate(
@@ -76,6 +81,8 @@ public class AuthService {
 
         pictureService.updateUserPicture(userDto.getPicture(), user);
         userService.saveUser(user);
+
+        emailService.wellcome_email(user.getEmail());
 
         return List.of(token);
     }

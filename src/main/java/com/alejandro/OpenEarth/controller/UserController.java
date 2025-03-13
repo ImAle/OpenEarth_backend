@@ -85,22 +85,12 @@ public class UserController {
         }
     }
 
-    @DeleteMapping("/delete")
-    public ResponseEntity<?> deleteUser(@RequestParam("id") long userId){
-        try{
-            userService.deleteUserById(userId);
-            return ResponseEntity.ok().body(Map.of("message", "The user has been deleted successfully"));
-        }catch (RuntimeException rtex){
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(Map.of("Error", rtex.getMessage()));
-        }
-    }
-
     @PutMapping("/update")
     public ResponseEntity<?> updateUser(@RequestHeader("Authorization") String token, @Valid @RequestBody UserUpdateDto userDto, BindingResult result, @RequestParam("id") Long id){
-        if(result.hasErrors())
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(result.getAllErrors());
-
         try{
+            if(result.hasErrors())
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(result.getAllErrors());
+
             if (!jwtService.isThatMe(token, id))
                 return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(Map.of("message", "You are not allowed to update someone else"));
 
@@ -108,6 +98,16 @@ public class UserController {
             return ResponseEntity.ok().body(Map.of("message", "The user has been updated successfully"));
         }catch (Exception ex){
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(Map.of("Error", ex.getMessage()));
+        }
+    }
+
+    @DeleteMapping("/delete")
+    public ResponseEntity<?> deleteUser(@RequestParam("id") long userId){
+        try{
+            userService.deleteUserById(userId);
+            return ResponseEntity.ok().body(Map.of("message", "The user has been deleted successfully"));
+        }catch (RuntimeException rtex){
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(Map.of("Error", rtex.getMessage()));
         }
     }
 }

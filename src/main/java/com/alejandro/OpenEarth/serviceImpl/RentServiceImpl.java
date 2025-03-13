@@ -7,6 +7,7 @@ import com.alejandro.OpenEarth.entity.HouseStatus;
 import com.alejandro.OpenEarth.entity.Rent;
 import com.alejandro.OpenEarth.entity.User;
 import com.alejandro.OpenEarth.repository.RentRepository;
+import com.alejandro.OpenEarth.service.EmailService;
 import com.alejandro.OpenEarth.service.HouseService;
 import com.alejandro.OpenEarth.service.RentService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,16 +25,16 @@ public class RentServiceImpl implements RentService {
     private RentRepository rentRepository;
 
     @Autowired
-    @Qualifier("userService")
-    private UserService userService;
-
-    @Autowired
     @Qualifier("houseService")
     private HouseService houseService;
 
     @Autowired
     @Qualifier("jwtService")
     private JwtService jwtService;
+
+    @Autowired
+    @Qualifier("emailService")
+    private EmailService emailService;
 
     @Override
     public Rent saveRent(Rent rent) {
@@ -43,16 +44,20 @@ public class RentServiceImpl implements RentService {
     @Override
     public Rent createRent(String token, RentCreationDto dto){
         Rent rent = new Rent();
+        User user = jwtService.getUser(token);
 
         House house = houseService.getHouseById(dto.getHouseId());
         house.setStatus(HouseStatus.RENTED);
 
         rent.setStartDate(dto.getStartTime());
         rent.setEndDate(dto.getEndTime());
-        rent.setUser(jwtService.getUser(token));
+        rent.setUser(user);
         rent.setHouse(house);
 
-        return this.saveRent(rent);
+        this.saveRent(rent);
+        emailService.rented_email(user.getEmail(), house.getTitle());
+
+        return rent;
     }
 
     @Override
@@ -125,8 +130,11 @@ public class RentServiceImpl implements RentService {
         if(!isthatMyRent(token, rent))
             throw new IllegalAccessException("You are not authorize to cancel someone else rent");
 
+        User user = jwtService.getUser(token);
         rent.setEndDate(LocalDateTime.now());
         this.saveRent(rent);
+
+        emailService.cancel_email(user.getEmail(), rent.getHouse().getTitle());
     }
 
     @Override
