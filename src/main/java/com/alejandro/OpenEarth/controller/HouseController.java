@@ -27,12 +27,12 @@ public class HouseController {
     private HouseService houseService;
 
     @PostMapping(value = "/create", consumes = {MediaType.MULTIPART_FORM_DATA_VALUE})
-    public ResponseEntity<?> createHouse(@Valid @RequestBody HouseCreationDto houseDto, BindingResult result) {
+    public ResponseEntity<?> createHouse(@RequestHeader("Authorization") String token, @Valid @RequestBody HouseCreationDto houseDto, BindingResult result) {
         try{
             if(result.hasErrors())
                 return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(result.getAllErrors());
 
-            House house = houseService.create(houseDto);
+            House house = houseService.create(token, houseDto);
             return ResponseEntity.status(HttpStatus.CREATED).body(Map.of("house", house));
         }catch (RuntimeException rtex){
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(Map.of("error", rtex.getMessage()));

@@ -47,7 +47,9 @@ public class SecurityConfig {
                                 "/api/user/update",
                                 "/api/rent/myRents",
                                 "/api/rent/cancel",
-                                "/api/rent/create"
+                                "/api/rent/create",
+                                "/api/report/create",
+                                "/api/review/create"
                         ).hasRole("GUEST")
 
                         .requestMatchers(
@@ -56,14 +58,18 @@ public class SecurityConfig {
                                 "/api/house/update",
                                 "/api/house/create",
                                 "/api/rent/house",
-                                "/api/rent/houses"
+                                "/api/rent/houses",
+                                "/api/report/create"
                         ).hasRole("HOSTESS")
 
                         .requestMatchers(
                                 "/api/user/activate",
                                 "/api/user/deactivate",
                                 "/api/user/delete",
-                                "/api/user"
+                                "/api/user",
+                                "/api/report",
+                                "/api/report/delete",
+                                "api/report/get"
                         ).hasRole("ADMIN")
 
                         .anyRequest().authenticated())

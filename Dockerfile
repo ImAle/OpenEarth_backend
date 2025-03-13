@@ -7,5 +7,5 @@ RUN ./mvnw package -DskipTests
 FROM eclipse-temurin:23-jdk-alpine
 WORKDIR /app
 COPY --from=builder /app/target/*.jar app.jar
-EXPOSE 443
+EXPOSE 8080
 CMD ["java", "-jar", "app.jar"]

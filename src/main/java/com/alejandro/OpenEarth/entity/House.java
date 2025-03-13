@@ -38,7 +38,9 @@ public class House {
     @Column(nullable = false)
     private String location;
     private String coordinates;
+    @Enumerated(EnumType.STRING)
     private HouseCategory category;
+    @Enumerated(EnumType.STRING)
     private HouseStatus status;
     private LocalDate creationDate;
     private LocalDate lastUpdateDate;

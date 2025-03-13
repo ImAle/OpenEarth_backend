@@ -27,14 +27,14 @@ public class ReportDto {
 
     }
 
-    public Report fromDtoToEntity(ReportDto reportDto) {
+    public Report fromDtoToEntity() {
         Report report = new Report();
         UserService userService = new UserService();
 
-        User reporter = userService.getUserById(reportDto.getReporterId());
-        User reported = userService.getUserById(reportDto.getReportedId());
+        User reporter = userService.getUserById(this.getReporterId());
+        User reported = userService.getUserById(this.getReportedId());
 
-        report.setComment(reportDto.getComment());
+        report.setComment(this.getComment());
         report.setReporter(reporter);
         report.setReported(reported);
 

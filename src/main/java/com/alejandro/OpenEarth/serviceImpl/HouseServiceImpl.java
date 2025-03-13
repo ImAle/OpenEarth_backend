@@ -43,8 +43,9 @@ public class HouseServiceImpl implements HouseService {
     private JwtService jwtService;
 
     @Override
-    public House create(HouseCreationDto houseDto) {
-        User owner = userService.getUserById(houseDto.getIdOwner());
+    public House create(String token, HouseCreationDto houseDto) {
+
+        User owner = jwtService.getUser(token);
         House house = new House();
 
         house.setTitle(houseDto.getTitle());

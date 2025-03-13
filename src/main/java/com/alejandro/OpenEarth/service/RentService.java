@@ -11,7 +11,7 @@ import java.util.Set;
 
 public interface RentService{
     Rent saveRent(Rent rent);
-    Rent createRent(RentCreationDto rentDto);
+    Rent createRent(String token, RentCreationDto rentDto);
     boolean isThatMyRentById(String token, long id);
     boolean isthatMyRent(String token, Rent rent);
     Rent getRentById(long id);

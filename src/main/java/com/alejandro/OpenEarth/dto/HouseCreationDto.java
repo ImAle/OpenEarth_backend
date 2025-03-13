@@ -46,7 +46,4 @@ public class HouseCreationDto {
     @NotBlank(message = "Pictures are required")
     @Size(min = 1, message = "Provide at least 1 picture")
     private Set<MultipartFile> pictures;
-    @NotBlank(message = "Owner is required")
-    private Long idOwner;
-
 }

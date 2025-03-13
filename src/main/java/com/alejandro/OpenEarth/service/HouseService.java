@@ -12,7 +12,7 @@ import java.util.List;
 import java.util.Set;
 
 public interface HouseService {
-    House create(HouseCreationDto houseDto);
+    House create(String token, HouseCreationDto houseDto);
     House getHouseById(Long id);
     Set<House> getHouses();
     List<HousePreviewDto> getAllAvailableHouses();

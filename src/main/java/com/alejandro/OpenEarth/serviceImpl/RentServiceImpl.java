@@ -41,7 +41,7 @@ public class RentServiceImpl implements RentService {
     }
 
     @Override
-    public Rent createRent(RentCreationDto dto){
+    public Rent createRent(String token, RentCreationDto dto){
         Rent rent = new Rent();
 
         House house = houseService.getHouseById(dto.getHouseId());
@@ -49,7 +49,7 @@ public class RentServiceImpl implements RentService {
 
         rent.setStartDate(dto.getStartTime());
         rent.setEndDate(dto.getEndTime());
-        rent.setUser(userService.getUserById(dto.getUserId()));
+        rent.setUser(jwtService.getUser(token));
         rent.setHouse(house);
 
         return this.saveRent(rent);

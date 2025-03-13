@@ -5,7 +5,9 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 @Data
@@ -28,7 +30,7 @@ public class HouseDetailsDto {
     private LocalDate creationDate;
     private Set<PictureDto> pictures = new HashSet<>();
     private UserDto owner;
-    private Set<Review> reviews = new HashSet<>();
+    private List<ReviewDto> reviews = new ArrayList<>();
 
     public HouseDetailsDto(House house) {
         this.id = house.getId();
@@ -46,7 +48,9 @@ public class HouseDetailsDto {
         this.status = house.getStatus();
         this.creationDate = house.getCreationDate();
         this.setOwner(new UserDto(house.getOwner()));
-        this.setReviews(house.getReviews());
+
+        List<ReviewDto> reviews = house.getReviews().stream().map(ReviewDto::new).toList();
+        this.setReviews(reviews);
 
         Set<PictureDto> pictures = new HashSet<>();
         for(Picture picture : house.getPictures()){

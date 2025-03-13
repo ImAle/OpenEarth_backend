@@ -39,7 +39,7 @@ public class RentController {
             if(!jwtService.isGuest(token))
                 return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("You are not allowed to perform this operation");
 
-            Rent rent = rentService.createRent(rentDto);
+            Rent rent = rentService.createRent(token, rentDto);
             return ResponseEntity.status(HttpStatus.CREATED).body(Map.of("rent", rent));
         }catch (RuntimeException rtex){
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(rtex.getMessage());
