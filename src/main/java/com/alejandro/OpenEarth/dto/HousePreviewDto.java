@@ -2,10 +2,13 @@ package com.alejandro.OpenEarth.dto;
 
 import com.alejandro.OpenEarth.entity.House;
 import com.alejandro.OpenEarth.entity.Picture;
+import com.alejandro.OpenEarth.service.CurrencyService;
+import com.alejandro.OpenEarth.serviceImpl.CurrencyServiceImpl;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.util.HashSet;
+import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -19,18 +22,26 @@ public class HousePreviewDto {
     private String location;
     private String coordinates;
     private double price;
+    private String currency;
     private Set<String> pictures = new HashSet<>();
 
     public HousePreviewDto(House house){
-        HousePreviewDto dto = new HousePreviewDto();
-        dto.setId(house.getId());
-        dto.setTitle(house.getTitle());
-        dto.setCountry(house.getCountry().getFormattedName());
-        dto.setLocation(house.getLocation());
-        dto.setCoordinates(house.getCoordinates());
-        dto.setPrice(house.getPrice());
-        dto.setPictures(house.getPictures()
+        this.setId(house.getId());
+        this.setTitle(house.getTitle());
+        this.setCountry(house.getCountry().getFormattedName());
+        this.setLocation(house.getLocation());
+        this.setCoordinates(house.getCoordinates());
+        this.setPictures(house.getPictures()
                 .stream().map(Picture::getUrl)
                 .collect(Collectors.toSet()));
+
+        double price = house.getPrice();
+
+        if(!Objects.equals(this.currency, "EUR")){
+            CurrencyService currencyService = new CurrencyServiceImpl();
+            price = currencyService.getPriceInSelectedCurrency(this.currency, house.getPrice());
+        }
+
+        this.price = price;
     }
 }

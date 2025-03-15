@@ -1,16 +1,14 @@
 package com.alejandro.OpenEarth.dto;
 
 import com.alejandro.OpenEarth.entity.House;
-import com.alejandro.OpenEarth.entity.HouseCategory;
-import com.alejandro.OpenEarth.entity.HouseStatus;
 import com.alejandro.OpenEarth.entity.Picture;
-import com.alejandro.OpenEarth.validation.ValidEnum;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.Size;
+import com.alejandro.OpenEarth.service.CurrencyService;
+import com.alejandro.OpenEarth.serviceImpl.CurrencyServiceImpl;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.util.HashSet;
+import java.util.Objects;
 import java.util.Set;
 
 @Data
@@ -24,6 +22,7 @@ public class HouseUpdateFormDto {
     private int beds;
     private int bathrooms;
     private double price;
+    private String currency;
     private String category;
     private String status;
     private Set<PictureDto> pictures;
@@ -35,7 +34,6 @@ public class HouseUpdateFormDto {
         this.setBedrooms(house.getBedrooms());
         this.setBeds(house.getBeds());
         this.setBathrooms(house.getBathrooms());
-        this.setPrice(house.getPrice());
         this.setCategory(house.getCategory().toString());
         this.setStatus(house.getStatus().toString());
 
@@ -44,6 +42,15 @@ public class HouseUpdateFormDto {
             pictures.add(new PictureDto(picture.getId(), picture.getUrl()));
         }
         this.setPictures(pictures);
+
+        double price = house.getPrice();
+
+        if(!Objects.equals(this.currency, "EUR")){
+            CurrencyService currencyService = new CurrencyServiceImpl();
+            price = currencyService.getPriceInSelectedCurrency(this.currency, house.getPrice());
+        }
+
+        this.price = price;
     }
 
 }

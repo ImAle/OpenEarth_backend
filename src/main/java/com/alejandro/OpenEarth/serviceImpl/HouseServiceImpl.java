@@ -5,6 +5,7 @@ import com.alejandro.OpenEarth.dto.HousePreviewDto;
 import com.alejandro.OpenEarth.dto.HouseUpdateDto;
 import com.alejandro.OpenEarth.entity.*;
 import com.alejandro.OpenEarth.repository.HouseRepository;
+import com.alejandro.OpenEarth.service.CurrencyService;
 import com.alejandro.OpenEarth.service.HouseService;
 import com.alejandro.OpenEarth.service.PictureService;
 import com.alejandro.OpenEarth.upload.StorageService;
@@ -14,10 +15,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDate;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 
 @Service("houseService")
 public class HouseServiceImpl implements HouseService {
@@ -35,8 +33,8 @@ public class HouseServiceImpl implements HouseService {
     private PictureService pictureService;
 
     @Autowired
-    @Qualifier("userService")
-    private UserService userService;
+    @Qualifier("currencyService")
+    private CurrencyService currencyService;
 
     @Autowired
     @Qualifier("jwtService")
@@ -55,12 +53,19 @@ public class HouseServiceImpl implements HouseService {
         house.setBeds(houseDto.getBeds());
         house.setLocation(houseDto.getLocation());
         house.setCategory(HouseCategory.valueOf(houseDto.getCategory()));
-        house.setPrice(houseDto.getPrice());
         house.setCreationDate(LocalDate.now());
         house.setLastUpdateDate(LocalDate.now());
         house.setRents(null);
         house.setReviews(null);
         house.setOwner(owner);
+
+        double price = houseDto.getPrice();
+        house.setPrice(price);
+
+        String currency = houseDto.getCurrency();
+
+        if (!Objects.equals(currency, "EUR"))
+            house.setPrice(currencyService.getPriceInEUR(currency, price));
 
         houseRepository.save(house);
 
@@ -144,9 +149,16 @@ public class HouseServiceImpl implements HouseService {
         house.setBedrooms(houseDto.getBedrooms());
         house.setBeds(houseDto.getBeds());
         house.setBathrooms(houseDto.getBathrooms());
-        house.setPrice(houseDto.getPrice());
         house.setCategory(HouseCategory.valueOf(houseDto.getCategory()));
         house.setStatus(HouseStatus.valueOf(houseDto.getStatus()));
+
+        double price = houseDto.getPrice();
+        house.setPrice(price);
+
+        String currency = houseDto.getCurrency();
+
+        if (!Objects.equals(currency, "EUR"))
+            house.setPrice(currencyService.getPriceInEUR(currency, price));
 
         Set<MultipartFile> pictures = houseDto.getNewPictures();
         if(pictures!=null && !pictures.isEmpty()) {

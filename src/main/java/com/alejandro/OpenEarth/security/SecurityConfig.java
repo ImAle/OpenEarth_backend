@@ -40,7 +40,8 @@ public class SecurityConfig {
                                 "/api/house",
                                 "/api/house/categories",
                                 "/api/house/details",
-                                "/api/user/details"
+                                "/api/user/details",
+                                "/api/geo/**"
                                 ).permitAll()
 
                         .requestMatchers(

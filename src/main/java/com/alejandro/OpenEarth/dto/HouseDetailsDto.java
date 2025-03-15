@@ -1,14 +1,13 @@
 package com.alejandro.OpenEarth.dto;
 
 import com.alejandro.OpenEarth.entity.*;
+import com.alejandro.OpenEarth.service.CurrencyService;
+import com.alejandro.OpenEarth.serviceImpl.CurrencyServiceImpl;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 @Data
 @NoArgsConstructor
@@ -22,6 +21,7 @@ public class HouseDetailsDto {
     private int beds;
     private int bathrooms;
     private double price;
+    private String currency;
     private String country;
     private String location;
     private String coordinates;
@@ -40,7 +40,6 @@ public class HouseDetailsDto {
         this.bedrooms = house.getBedrooms();
         this.beds = house.getBeds();
         this.bathrooms = house.getBathrooms();
-        this.price = house.getPrice();
         this.country = house.getCountry().getFormattedName();
         this.location = house.getLocation();
         this.coordinates = house.getCoordinates();
@@ -48,6 +47,16 @@ public class HouseDetailsDto {
         this.status = house.getStatus();
         this.creationDate = house.getCreationDate();
         this.setOwner(new UserDto(house.getOwner()));
+
+        double price = house.getPrice();
+
+        if(!Objects.equals(this.currency, "EUR")){
+            CurrencyService currencyService = new CurrencyServiceImpl();
+            price = currencyService.getPriceInSelectedCurrency(this.currency, house.getPrice());
+        }
+
+        this.price = price;
+
 
         List<ReviewDto> reviews = house.getReviews().stream().map(ReviewDto::new).toList();
         this.setReviews(reviews);

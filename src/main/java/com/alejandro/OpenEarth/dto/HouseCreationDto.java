@@ -36,6 +36,8 @@ public class HouseCreationDto {
     @NotBlank(message = "Price is required")
     @Size(min = 1, message = "Price must be higher than 1")
     private double price;
+    @NotBlank(message = "Choose currency")
+    private String currency;
     @ValidEnum(enumClass = Country.class, message = "Invalid country")
     private Country country;
     @NotBlank(message = "Location is required")

@@ -36,6 +36,8 @@ public class HouseUpdateDto {
     @NotBlank(message = "Price is required")
     @Size(min = 1, message = "Price must be higher than 1")
     private double price;
+    @NotBlank(message = "Choose currency")
+    private String currency;
     @ValidEnum(enumClass = HouseCategory.class, message = "Invalid house category")
     private String category;
     @ValidEnum(enumClass = HouseStatus.class, message = "Invalid house category")
