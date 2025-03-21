@@ -21,20 +21,20 @@ public class GeolocationController {
 
     @GetMapping("/search")
     public ResponseEntity<?> getCoordinates(@RequestParam("country") String country, @RequestParam("city") String city, @RequestParam("street") String street, @RequestParam("postalCode") String postalCode) {
-        System.out.println(country + " " + city + " " + street + " " + postalCode);
         Object geolocationDto = geolocationService.getCoordinates(country, city, street, postalCode);
-        System.out.println(geolocationDto);
-        //if (geolocationDtos.length == 0)
-            //return new ResponseEntity<>("No geolocation found", HttpStatus.NOT_FOUND);
+
+        if (geolocationDto == null)
+            return new ResponseEntity<>("No geolocation found", HttpStatus.NOT_FOUND);
+
         return new ResponseEntity<>(geolocationDto, HttpStatus.OK);
     }
 
     @GetMapping("/reverse")
     public ResponseEntity<?> getReverseGeolocation(@RequestParam double lat, @RequestParam double lon) {
         Object response = geolocationService.getAddress(lat, lon);
-        System.out.println(response);
-        //if(response.length == 0)
-        //    return ResponseEntity.status(HttpStatus.BAD_GATEWAY).build();
+
+        if(response == null)
+            return ResponseEntity.status(HttpStatus.BAD_GATEWAY).build();
 
         return ResponseEntity.ok().body(response);
     }
