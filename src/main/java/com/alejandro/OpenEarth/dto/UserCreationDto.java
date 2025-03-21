@@ -4,7 +4,6 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.springframework.web.multipart.MultipartFile;
 
 @Data
 @NoArgsConstructor
@@ -24,6 +23,5 @@ public class UserCreationDto {
     private String password;
     @NotBlank(message = "Password Confirmation is required")
     private String passwordConfirmation;
-    private MultipartFile picture;
 
 }

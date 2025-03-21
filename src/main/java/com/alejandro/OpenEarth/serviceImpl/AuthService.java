@@ -74,12 +74,10 @@ public class AuthService {
         user.setLastname(userDto.getLastname());
         user.setEmail(userDto.getEmail());
         user.setPassword(userService.passwordEncoder().encode(userDto.getPassword()));
+        user.setPicture(null);
 
         String token = jwtService.generateToken(user);
         user.setToken(token);
-        userService.saveUser(user);
-
-        pictureService.updateUserPicture(userDto.getPicture(), user);
         userService.saveUser(user);
 
         emailService.wellcome_email(user.getEmail());
@@ -87,7 +85,7 @@ public class AuthService {
         return List.of(token);
     }
 
-    public User updateUser(UserUpdateDto userDto, Long id){
+    public User updateUser(UserUpdateDto userDto, Long id, MultipartFile picture){
         Map<String, String> errors = new HashMap<>();
         User user = userService.getUserById(id);
 
@@ -95,7 +93,6 @@ public class AuthService {
         updateUsername(user, userDto.getUsername(), errors);
 
         // Update picture
-        MultipartFile picture = userDto.getPicture();
         if (picture != null) {
             Picture oldPicture = user.getPicture();
             if (oldPicture != null) {

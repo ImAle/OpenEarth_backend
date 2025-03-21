@@ -14,9 +14,11 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 @RestController
 @RequestMapping("/api/house")
@@ -27,12 +29,15 @@ public class HouseController {
     private HouseService houseService;
 
     @PostMapping(value = "/create", consumes = {MediaType.MULTIPART_FORM_DATA_VALUE})
-    public ResponseEntity<?> createHouse(@RequestHeader("Authorization") String token, @Valid @RequestBody HouseCreationDto houseDto, BindingResult result) {
+    public ResponseEntity<?> createHouse(@RequestHeader("Authorization") String token, @Valid @RequestBody HouseCreationDto houseDto, BindingResult result, @RequestParam("pictures") List<MultipartFile> pictures) {
         try{
             if(result.hasErrors())
                 return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(result.getAllErrors());
 
-            House house = houseService.create(token, houseDto);
+            if(pictures!=null && !pictures.isEmpty())
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Map.of("errors", "You must provide at least one picture"));
+
+            House house = houseService.create(token, houseDto, pictures);
             return ResponseEntity.status(HttpStatus.CREATED).body(Map.of("house", house));
         }catch (RuntimeException rtex){
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(Map.of("error", rtex.getMessage()));
@@ -82,7 +87,7 @@ public class HouseController {
     }
 
     @PutMapping("/update")
-    public ResponseEntity<?> updateHouse(@RequestHeader("Authorization") String token, @Valid @RequestBody HouseUpdateDto houseDto, BindingResult result, @RequestParam("id") Long id) {
+    public ResponseEntity<?> updateHouse(@RequestHeader("Authorization") String token, @Valid @RequestBody HouseUpdateDto houseDto, BindingResult result, @RequestParam("id") Long id, @RequestParam("pictures") List<MultipartFile> newPictures) {
         try{
             if(result.hasErrors())
                 return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(result.getAllErrors());
@@ -90,7 +95,7 @@ public class HouseController {
             if(!houseService.isMyHouse(token, id))
                 return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(Map.of("error", "You can not edit this house"));
 
-            House house = houseService.updateHouse(houseDto, id);
+            House house = houseService.updateHouse(houseDto, id, newPictures);
 
             return ResponseEntity.ok().body(Map.of("house", house));
         }catch (RuntimeException rtex){

@@ -41,7 +41,7 @@ public class HouseServiceImpl implements HouseService {
     private JwtService jwtService;
 
     @Override
-    public House create(String token, HouseCreationDto houseDto) {
+    public House create(String token, HouseCreationDto houseDto, List<MultipartFile> images) {
 
         User owner = jwtService.getUser(token);
         House house = new House();
@@ -70,7 +70,7 @@ public class HouseServiceImpl implements HouseService {
         houseRepository.save(house);
 
         Set<Picture> pictures = new HashSet<>();
-        for(MultipartFile file : houseDto.getPictures()){
+        for(MultipartFile file : images){
             // Save image
             String filename = storageService.store(file, house.getId());
 
@@ -140,7 +140,7 @@ public class HouseServiceImpl implements HouseService {
     }
 
     @Override
-    public House updateHouse(HouseUpdateDto houseDto, Long id) {
+    public House updateHouse(HouseUpdateDto houseDto, Long id, List<MultipartFile> pictures) {
         House house = this.getHouseById(id);
 
         house.setTitle(houseDto.getTitle());
@@ -160,7 +160,6 @@ public class HouseServiceImpl implements HouseService {
         if (!Objects.equals(currency, "EUR"))
             house.setPrice(currencyService.getPriceInEUR(currency, price));
 
-        Set<MultipartFile> pictures = houseDto.getNewPictures();
         if(pictures!=null && !pictures.isEmpty()) {
             for(MultipartFile picture : pictures) {
                 pictureService.updateHousePicture(picture, house);

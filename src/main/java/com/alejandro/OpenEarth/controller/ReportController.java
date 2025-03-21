@@ -1,5 +1,6 @@
 package com.alejandro.OpenEarth.controller;
 
+import com.alejandro.OpenEarth.dto.ReportCreationDto;
 import com.alejandro.OpenEarth.dto.ReportDto;
 import com.alejandro.OpenEarth.entity.Report;
 import com.alejandro.OpenEarth.service.ReportService;
@@ -29,7 +30,7 @@ public class ReportController {
     private JwtService jwtService;
 
     @PostMapping("/create")
-    public ResponseEntity<?> createReport(@RequestHeader("Authorization") String token, @Valid @RequestBody ReportDto reportDto, BindingResult result) {
+    public ResponseEntity<?> createReport(@RequestHeader("Authorization") String token, @Valid @RequestBody ReportCreationDto reportDto, BindingResult result) {
         try{
             if(!Objects.equals(jwtService.getUser(token).getId(), reportDto.getReporterId()))
                 return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("You can not report on behalf of someone else");
@@ -56,14 +57,14 @@ public class ReportController {
         if(reports.isEmpty())
             return ResponseEntity.noContent().build();
 
-        return ResponseEntity.ok().body(Map.of("reports", reports));
+        return ResponseEntity.ok().body(Map.of("reports", reports.stream().map(ReportDto::new).toList()));
     }
 
     @GetMapping("/get")
     public ResponseEntity<?> getReportById(@RequestParam("id") Long id){
         try{
             Report report = reportService.getReportById(id);
-            return ResponseEntity.ok().body(Map.of("report", report));
+            return ResponseEntity.ok().body(Map.of("report", new ReportDto(report)));
         }catch (RuntimeException rtex){
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(Map.of("error", rtex.getMessage()));
         }catch (Exception e){

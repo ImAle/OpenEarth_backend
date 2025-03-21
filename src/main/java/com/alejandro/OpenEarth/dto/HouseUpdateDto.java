@@ -7,9 +7,6 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.springframework.web.multipart.MultipartFile;
-
-import java.util.Set;
 
 @Data
 @NoArgsConstructor
@@ -42,6 +39,4 @@ public class HouseUpdateDto {
     private String category;
     @ValidEnum(enumClass = HouseStatus.class, message = "Invalid house category")
     private String status;
-    private Set<MultipartFile> newPictures;
-
 }

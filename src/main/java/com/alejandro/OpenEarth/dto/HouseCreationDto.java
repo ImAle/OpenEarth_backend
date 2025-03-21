@@ -45,7 +45,4 @@ public class HouseCreationDto {
     private String location;
     @ValidEnum(enumClass = HouseCategory.class, message = "Invalid house category")
     private String category;
-    @NotBlank(message = "Pictures are required")
-    @Size(min = 1, message = "Provide at least 1 picture")
-    private Set<MultipartFile> pictures;
 }
