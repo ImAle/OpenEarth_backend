@@ -46,7 +46,8 @@ public class JwtAuthFilter extends OncePerRequestFilter {
         String path = request.getRequestURI();
 
         // routes that should not been filtered by JwtService -> auth endpoints
-        return path.startsWith("/api/auth/") || path.startsWith("/api/geo/");
+        return path.startsWith("/api/auth/") || path.startsWith("/api/geo/") || path.equals("/api/house/categories")
+                || path.equals("/api/house/details") || path.equals("/api/user/details");
     }
 
     @Override

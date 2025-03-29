@@ -87,7 +87,7 @@ public class UserController {
     }
 
     @PutMapping("/update")
-    public ResponseEntity<?> updateUser(@RequestHeader("Authorization") String token, @Valid @RequestBody UserUpdateDto userDto, BindingResult result, @RequestParam("id") Long id, @RequestParam("picture") MultipartFile picture){
+    public ResponseEntity<?> updateUser(@RequestHeader("Authorization") String token, @Valid @RequestBody UserUpdateDto userDto, BindingResult result, @RequestParam("id") Long id, @RequestParam(value = "picture", required = false) MultipartFile picture){
         try{
             if(result.hasErrors())
                 return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(result.getAllErrors());
@@ -103,8 +103,11 @@ public class UserController {
     }
 
     @DeleteMapping("/delete")
-    public ResponseEntity<?> deleteUser(@RequestParam("id") long userId){
+    public ResponseEntity<?> deleteUser(@RequestHeader("Authorization") String token, @RequestParam("id") long userId){
         try{
+            if (!jwtService.isAdmin(token))
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(Map.of("message", "You are not allowed to delete someone else"));
+
             userService.deleteUserById(userId);
             return ResponseEntity.ok().body(Map.of("message", "The user has been deleted successfully"));
         }catch (RuntimeException rtex){

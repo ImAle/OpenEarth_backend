@@ -45,7 +45,6 @@ public class SecurityConfig {
                                 ).permitAll()
 
                         .requestMatchers(
-                                "/api/user/update",
                                 "/api/rent/myRents",
                                 "/api/rent/cancel",
                                 "/api/rent/create",
@@ -54,7 +53,6 @@ public class SecurityConfig {
                         ).hasRole("GUEST")
 
                         .requestMatchers(
-                                "/api/user/update",
                                 "/api/house/delete",
                                 "/api/house/update",
                                 "/api/house/create",
@@ -62,6 +60,10 @@ public class SecurityConfig {
                                 "/api/rent/houses",
                                 "/api/report/create"
                         ).hasRole("HOSTESS")
+
+                        .requestMatchers(
+                                "/api/user/update"
+                        ).hasAnyRole("GUEST", "HOSTESS")
 
                         .requestMatchers(
                                 "/api/user/activate",

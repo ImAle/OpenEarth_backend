@@ -26,16 +26,17 @@ public class UserDto {
     private Set<Review> reviews = new HashSet<>();
 
     public UserDto(User user) {
-        UserDto userDto = new UserDto();
-        userDto.setId(user.getId());
-        userDto.setUsername(user.getUsername());
-        userDto.setEmail(user.getEmail());
-        userDto.setEnabled(user.isEnabled());
-        userDto.setRole(user.getRole());
-        userDto.setEnabled(user.isEnabled());
-        userDto.setHouses(user.getHouses());
-        userDto.setRents(user.getRents());
-        userDto.setReviews(user.getReviews());
-        userDto.setPicture(user.getPicture().getUrl());
+        this.setId(user.getId());
+        this.setUsername(user.getRealUsername());
+        this.setFirstName(user.getFirstname());
+        this.setLastName(user.getLastname());
+        this.setEmail(user.getEmail());
+        this.setEnabled(user.isEnabled());
+        this.setRole(user.getRole());
+        this.setEnabled(user.isEnabled());
+        this.setHouses(user.getHouses());
+        this.setRents(user.getRents());
+        this.setReviews(user.getReviews());
+        this.setPicture(user.getPicture() != null ? user.getPicture().getUrl() : null);
     }
 }

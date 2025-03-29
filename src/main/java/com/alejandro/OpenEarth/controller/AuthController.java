@@ -35,13 +35,15 @@ public class AuthController {
 
     @PostMapping("/register")
     public ResponseEntity<?> register(@Valid @RequestBody UserCreationDto userDto, BindingResult result){
-        if(result.hasErrors())
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(result.getAllErrors());
-
         try{
+            if(result.hasErrors())
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(result.getAllErrors());
+
             String token = authService.register(userDto).getFirst();
             return ResponseEntity.ok().body(Map.of("token", token));
-        }catch (Exception e){
+        }catch(RuntimeException rtex){
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(rtex.getMessage());
+        } catch (Exception e){
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }

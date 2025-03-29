@@ -1,5 +1,8 @@
 package com.alejandro.OpenEarth.dto;
 
+import com.alejandro.OpenEarth.entity.HouseCategory;
+import com.alejandro.OpenEarth.entity.UserRole;
+import com.alejandro.OpenEarth.validation.ValidEnum;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 import lombok.Data;
@@ -23,5 +26,6 @@ public class UserCreationDto {
     private String password;
     @NotBlank(message = "Password Confirmation is required")
     private String passwordConfirmation;
-
+    @ValidEnum(enumClass = UserRole.class, message = "Invalid role")
+    private UserRole role;
 }
