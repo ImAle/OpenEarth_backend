@@ -7,6 +7,7 @@ import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Objects;
 import java.util.Set;
 
@@ -46,7 +47,7 @@ public class House {
     private LocalDate lastUpdateDate;
 
     @OneToMany(mappedBy = "house", cascade = CascadeType.ALL, orphanRemoval = true)
-    private Set<Picture> pictures;
+    private List<Picture> pictures;
 
     @ManyToOne
     @JoinColumn(name = "owner_id", nullable = false)

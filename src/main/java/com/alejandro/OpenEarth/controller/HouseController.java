@@ -29,12 +29,12 @@ public class HouseController {
     private HouseService houseService;
 
     @PostMapping(value = "/create", consumes = {MediaType.MULTIPART_FORM_DATA_VALUE})
-    public ResponseEntity<?> createHouse(@RequestHeader("Authorization") String token, @Valid @RequestBody HouseCreationDto houseDto, BindingResult result, @RequestParam("pictures") List<MultipartFile> pictures) {
+    public ResponseEntity<?> createHouse(@RequestHeader("Authorization") String token, @Valid @RequestPart("house") HouseCreationDto houseDto, BindingResult result, @RequestPart("pictures") MultipartFile[] pictures) {
         try{
             if(result.hasErrors())
                 return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(result.getAllErrors());
 
-            if(pictures!=null && !pictures.isEmpty())
+            if(pictures.length == 0)
                 return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Map.of("errors", "You must provide at least one picture"));
 
             House house = houseService.create(token, houseDto, pictures);

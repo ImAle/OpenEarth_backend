@@ -21,6 +21,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
+import java.util.Set;
 
 @Component("jwtAuthFilter")
 public class JwtAuthFilter extends OncePerRequestFilter {
@@ -31,6 +32,13 @@ public class JwtAuthFilter extends OncePerRequestFilter {
 
     @Autowired
     private UserDetailsService userDetailsService;
+
+    private static final Set<String> ALLOWED_PATHS = Set.of(
+            "/api/house/categories",
+            "/api/house/details",
+            "/api/user/details",
+            "/api/house"
+    );
 
     // If happens any error, this function is triggered to send token related errors.
     private void sendErrorResponse(HttpServletResponse response, HttpStatus status, String message) throws IOException {
@@ -45,9 +53,8 @@ public class JwtAuthFilter extends OncePerRequestFilter {
     protected boolean shouldNotFilter(HttpServletRequest request) {
         String path = request.getRequestURI();
 
-        // routes that should not been filtered by JwtService -> auth endpoints
-        return path.startsWith("/api/auth/") || path.startsWith("/api/geo/") || path.equals("/api/house/categories")
-                || path.equals("/api/house/details") || path.equals("/api/user/details");
+        // routes that should not been filtered by JwtService
+        return path.startsWith("/api/auth/") || path.startsWith("/api/geo/") || ALLOWED_PATHS.contains(path);
     }
 
     @Override

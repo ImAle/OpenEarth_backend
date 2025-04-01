@@ -41,8 +41,7 @@ public class HouseServiceImpl implements HouseService {
     private JwtService jwtService;
 
     @Override
-    public House create(String token, HouseCreationDto houseDto, List<MultipartFile> images) {
-
+    public House create(String token, HouseCreationDto houseDto, MultipartFile[] images) {
         User owner = jwtService.getUser(token);
         House house = new House();
 
@@ -51,10 +50,14 @@ public class HouseServiceImpl implements HouseService {
         house.setGuests(houseDto.getGuests());
         house.setBedrooms(houseDto.getBedrooms());
         house.setBeds(houseDto.getBeds());
+        house.setBathrooms(houseDto.getBathrooms());
         house.setLocation(houseDto.getLocation());
         house.setCategory(HouseCategory.valueOf(houseDto.getCategory()));
         house.setCreationDate(LocalDate.now());
         house.setLastUpdateDate(LocalDate.now());
+        house.setCountry(houseDto.getCountry());
+        house.setStatus(HouseStatus.AVAILABLE);
+        house.setCategory(HouseCategory.valueOf(houseDto.getCategory()));
         house.setRents(null);
         house.setReviews(null);
         house.setOwner(owner);
@@ -69,18 +72,18 @@ public class HouseServiceImpl implements HouseService {
 
         houseRepository.save(house);
 
-        Set<Picture> pictures = new HashSet<>();
-        for(MultipartFile file : images){
+        List<Picture> pictures = new ArrayList<>();
+
+        for (MultipartFile file : images) {
             // Save image
             String filename = storageService.store(file, house.getId());
 
             Picture picture = pictureService.createHousePicture(filename, house);
-            pictureService.save(picture);
+            picture = pictureService.save(picture);
             pictures.add(picture);
         }
 
         house.setPictures(pictures);
-
         return houseRepository.save(house);
 
     }
@@ -106,7 +109,7 @@ public class HouseServiceImpl implements HouseService {
     }
 
     @Override
-    public List<HousePreviewDto> getFilteredHouses(Country country, double minPrice, double maxPrice, Integer beds, Integer guests, HouseCategory category) {
+    public List<HousePreviewDto> getFilteredHouses(Country country, Double minPrice, Double maxPrice, Integer beds, Integer guests, HouseCategory category) {
         List<House> houses = houseRepository.findHousesByFilters(country, minPrice, maxPrice, beds, guests, category);
         return houses.stream().map(HousePreviewDto::new).toList();
     }

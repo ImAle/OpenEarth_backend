@@ -13,11 +13,11 @@ import java.util.List;
 import java.util.Set;
 
 public interface HouseService {
-    House create(String token, HouseCreationDto houseDto, List<MultipartFile> images);
+    House create(String token, HouseCreationDto houseDto, MultipartFile[] images);
     House getHouseById(Long id);
     Set<House> getHouses();
     List<HousePreviewDto> getAllAvailableHouses();
-    List<HousePreviewDto> getFilteredHouses(Country country, double minPrice, double maxPrice, Integer beds, Integer guests, HouseCategory category);
+    List<HousePreviewDto> getFilteredHouses(Country country, Double minPrice, Double maxPrice, Integer beds, Integer guests, HouseCategory category);
     HouseStatus[] getHouseStatuses();
     List<Long> getIdHousesByOwnerId(Long ownerId);
     Set<House> getHousesofLoggedUser(String token);

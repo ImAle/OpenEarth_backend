@@ -50,7 +50,7 @@ public class FileSystemStorageService implements StorageService{
 			// Resolve file's location
 			Path allocation = this.location.resolve(Paths.get(file.getOriginalFilename()))
 					.normalize().toAbsolutePath();
-			
+
 			// It checks the file is not been uploading out of the directory
 			if (!allocation.getParent().equals(this.location.toAbsolutePath())) {
 			    throw new StorageException("The picture can not be upload out of the directory.");

@@ -27,7 +27,7 @@ public class AuthController {
             String token = authService.login(email, password);
             return ResponseEntity.ok().body(Map.of("token", token));
         }catch (AuthenticationException aex){
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(Map.of("Error", "Invalid credentials"));
         }catch (Exception ex){
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
