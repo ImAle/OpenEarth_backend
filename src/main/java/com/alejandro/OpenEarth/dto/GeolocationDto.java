@@ -8,5 +8,5 @@ import lombok.NoArgsConstructor;
 public class GeolocationDto {
     private String latitude;
     private String longitude;
-    private String displayName;
+    private String location;
 }

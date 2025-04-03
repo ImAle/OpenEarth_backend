@@ -1,6 +1,5 @@
 package com.alejandro.OpenEarth.controller;
 
-import com.alejandro.OpenEarth.dto.GeolocationDto;
 import com.alejandro.OpenEarth.service.GeolocationService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -11,6 +10,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.Map;
+
 @RestController
 @RequestMapping("/api/geo")
 public class GeolocationController {
@@ -20,13 +21,18 @@ public class GeolocationController {
     private GeolocationService geolocationService;
 
     @GetMapping("/search")
-    public ResponseEntity<?> getCoordinates(@RequestParam("country") String country, @RequestParam("city") String city, @RequestParam("street") String street, @RequestParam("postalCode") String postalCode) {
-        Object geolocationDto = geolocationService.getCoordinates(country, city, street, postalCode);
+    public ResponseEntity<?> getCoordinates(@RequestParam("country") String country, @RequestParam("location") String location) {
+        try{
+            Object geolocationDto = geolocationService.getCoordinates(country, location);
 
-        if (geolocationDto == null)
-            return new ResponseEntity<>("No geolocation found", HttpStatus.NOT_FOUND);
+            if (geolocationDto == null)
+                return ResponseEntity.status(HttpStatus.BAD_GATEWAY).build();
 
-        return new ResponseEntity<>(geolocationDto, HttpStatus.OK);
+            return ResponseEntity.ok().body(geolocationDto);
+        }catch (IllegalArgumentException iaex){
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(Map.of("error", iaex.getMessage()));
+        }
+
     }
 
     @GetMapping("/reverse")

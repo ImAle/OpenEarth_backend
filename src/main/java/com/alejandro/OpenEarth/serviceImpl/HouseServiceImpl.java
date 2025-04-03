@@ -125,6 +125,11 @@ public class HouseServiceImpl implements HouseService {
     }
 
     @Override
+    public Country[] getCountries() {
+        return Country.values();
+    }
+
+    @Override
     public List<Long> getIdHousesByOwnerId(Long ownerId) {
         return houseRepository.findHousesIdByOwnerId(ownerId);
     }

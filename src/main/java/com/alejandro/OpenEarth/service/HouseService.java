@@ -23,6 +23,7 @@ public interface HouseService {
     Set<House> getHousesofLoggedUser(String token);
     boolean isMyHouse(String token, Long houseId);
     HouseCategory[] getHouseCategories();
+    Country[] getCountries();
     House updateHouse(HouseUpdateDto houseDto, Long id, List<MultipartFile> newPictures);
     void deleteHouseById(Long id);
 }

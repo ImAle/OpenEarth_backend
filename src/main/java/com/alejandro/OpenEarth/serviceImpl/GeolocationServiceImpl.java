@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
 
+import java.util.Arrays;
 import java.util.Map;
 
 @Service("geolocationService")
@@ -17,12 +18,10 @@ public class GeolocationServiceImpl implements GeolocationService {
     @Autowired
     private RestTemplate restTemplate ;
 
-    public Object getCoordinates(String country, String city, String street, String postalCode){
+    public Object getCoordinates(String country, String location){
+        String query = country.strip().replace(" ", "_") + "_" + location.strip().replace(" ", "_");
         String url = UriComponentsBuilder.fromUriString("https://nominatim.openstreetmap.org/search")
-                .queryParam("country", country.strip().replace(" ", "_"))
-                .queryParam("city", city.strip().replace(" ", "_"))
-                .queryParam("street", street.strip().replace(" ", "_"))
-                .queryParam("postalcode", postalCode.strip())
+                .queryParam("q", query)
                 .queryParam("format", "json")
                 .queryParam("limit", 1)
                 .toUriString();
@@ -35,12 +34,16 @@ public class GeolocationServiceImpl implements GeolocationService {
                 Map[].class
         );
 
-        Map<String, Object> geolocationResponse = response.getBody()[0];
+        if (response.getBody() == null || response.getBody().length == 0) {
+            throw new IllegalArgumentException("You need to provide a valid response. Whether it is from street, city, country or country, city, street");
+        }
+
+        Map<String, Object> answer = response.getBody()[0];
 
         GeolocationDto dto = new GeolocationDto();
-        dto.setLatitude((String) geolocationResponse.get("lat"));
-        dto.setLongitude((String) geolocationResponse.get("lon"));
-        dto.setDisplayName((String) geolocationResponse.get("display_name"));
+        dto.setLatitude((String) answer.get("lat"));
+        dto.setLongitude((String) answer.get("lon"));
+        dto.setLocation((String) answer.get("display_name"));
 
         return dto;
     }

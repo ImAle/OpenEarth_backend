@@ -42,6 +42,8 @@ public class SecurityConfig {
                                 "/api/house/categories",
                                 "/api/house/details",
                                 "/api/user/details",
+                                "/api/house/countries",
+                                "/api/house/status",
                                 "/api/geo/**"
                                 ).permitAll()
 

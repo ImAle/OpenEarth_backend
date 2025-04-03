@@ -4,6 +4,7 @@ import com.alejandro.OpenEarth.dto.*;
 import com.alejandro.OpenEarth.entity.Country;
 import com.alejandro.OpenEarth.entity.House;
 import com.alejandro.OpenEarth.entity.HouseCategory;
+import com.alejandro.OpenEarth.entity.HouseStatus;
 import com.alejandro.OpenEarth.service.HouseService;
 import com.alejandro.OpenEarth.upload.StorageService;
 import jakarta.validation.Valid;
@@ -66,6 +67,24 @@ public class HouseController {
             return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
 
         return ResponseEntity.ok().body(Map.of("categories", categories));
+    }
+
+    @GetMapping("/status")
+    public ResponseEntity<?> getStatuses(){
+        HouseStatus[] statuses = houseService.getHouseStatuses();
+        if(statuses.length == 0)
+            return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+
+        return ResponseEntity.ok().body(Map.of("statuses", statuses));
+    }
+
+    @GetMapping("/countries")
+    public ResponseEntity<?> getCountries() {
+        Country[] countries = houseService.getCountries();
+        if(countries.length == 0)
+            return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+
+        return ResponseEntity.ok().body(Map.of("countries", countries));
     }
 
     @GetMapping("/details")
