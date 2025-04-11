@@ -1,14 +1,17 @@
 package com.alejandro.OpenEarth.serviceImpl;
 
+import com.alejandro.OpenEarth.dto.GeolocationDto;
 import com.alejandro.OpenEarth.dto.HouseCreationDto;
 import com.alejandro.OpenEarth.dto.HousePreviewDto;
 import com.alejandro.OpenEarth.dto.HouseUpdateDto;
 import com.alejandro.OpenEarth.entity.*;
 import com.alejandro.OpenEarth.repository.HouseRepository;
 import com.alejandro.OpenEarth.service.CurrencyService;
+import com.alejandro.OpenEarth.service.GeolocationService;
 import com.alejandro.OpenEarth.service.HouseService;
 import com.alejandro.OpenEarth.service.PictureService;
 import com.alejandro.OpenEarth.upload.StorageService;
+import com.alejandro.OpenEarth.utility.GeoUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
@@ -37,6 +40,10 @@ public class HouseServiceImpl implements HouseService {
     private CurrencyService currencyService;
 
     @Autowired
+    @Qualifier("geolocationService")
+    private GeolocationService geolocationService;
+
+    @Autowired
     @Qualifier("jwtService")
     private JwtService jwtService;
 
@@ -57,6 +64,8 @@ public class HouseServiceImpl implements HouseService {
         house.setLastUpdateDate(LocalDate.now());
         house.setCountry(houseDto.getCountry());
         house.setStatus(HouseStatus.AVAILABLE);
+        house.setLatitude(houseDto.getLatitude());
+        house.setLongitude(houseDto.getLongitude());
         house.setCategory(HouseCategory.valueOf(houseDto.getCategory()));
         house.setRents(null);
         house.setReviews(null);
@@ -103,15 +112,24 @@ public class HouseServiceImpl implements HouseService {
     }
 
     @Override
-    public List<HousePreviewDto> getAllAvailableHouses() {
+    public List<HousePreviewDto> getAllAvailableHouses(String currency) {
         Set<House> houses = houseRepository.findByStatusAndEnabledOwners(HouseStatus.AVAILABLE);
-        return houses.stream().map(HousePreviewDto::new).toList();
+        return houses.stream().map(h -> new HousePreviewDto(h, currency)).toList();
     }
 
     @Override
-    public List<HousePreviewDto> getFilteredHouses(Country country, Double minPrice, Double maxPrice, Integer beds, Integer guests, HouseCategory category) {
+    public List<HousePreviewDto> getHousesNearTo(double latitude, double longitude, double km){
+        GeoUtils.BoundingBox box = GeoUtils.getBoundingBox(latitude, longitude, km);
+
+        return houseRepository.findInArea(
+                box.minLat(), box.maxLat(), box.minLng(), box.maxLng()
+        );
+    }
+
+    @Override
+    public List<HousePreviewDto> getFilteredHouses(Country country, Double minPrice, Double maxPrice, Integer beds, Integer guests, HouseCategory category, String currency) {
         List<House> houses = houseRepository.findHousesByFilters(country, minPrice, maxPrice, beds, guests, category);
-        return houses.stream().map(HousePreviewDto::new).toList();
+        return houses.stream().map(h -> new HousePreviewDto(h, currency)).toList();
     }
 
     @Override
@@ -125,8 +143,8 @@ public class HouseServiceImpl implements HouseService {
     }
 
     @Override
-    public Country[] getCountries() {
-        return Country.values();
+    public String[] getCountries() {
+        return Arrays.stream(Country.values()).map(Country::getFormattedName).toArray(String[]::new);
     }
 
     @Override

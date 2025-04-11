@@ -4,6 +4,7 @@ import com.alejandro.OpenEarth.dto.ReportCreationDto;
 import com.alejandro.OpenEarth.dto.ReportDto;
 import com.alejandro.OpenEarth.entity.Report;
 import com.alejandro.OpenEarth.service.ReportService;
+import com.alejandro.OpenEarth.serviceImpl.AuthService;
 import com.alejandro.OpenEarth.serviceImpl.JwtService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,17 +31,17 @@ public class ReportController {
     private JwtService jwtService;
 
     @PostMapping("/create")
-    public ResponseEntity<?> createReport(@RequestHeader("Authorization") String token, @Valid @RequestBody ReportCreationDto reportDto, BindingResult result) {
+    public ResponseEntity<?> createReport(@RequestHeader("Authorization") String token, @Valid @RequestBody ReportCreationDto report, BindingResult result) {
         try{
-            if(!Objects.equals(jwtService.getUser(token).getId(), reportDto.getReporterId()))
+            if(!Objects.equals(jwtService.getUser(token).getId(), report.getReporterId()))
                 return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("You can not report on behalf of someone else");
 
             if(result.hasErrors())
                 return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(result.getAllErrors());
 
-            Report report = reportDto.fromDtoToEntity();
-            reportService.createReport(report);
-            String message = report.getReported().getUsername() + "has been successfully reported";
+            Report rep = report.fromDtoToEntity();
+            reportService.createReport(rep);
+            String message = rep.getReported().getUsername() + "has been successfully reported";
 
             return ResponseEntity.status(HttpStatus.CREATED).body(Map.of("message", message));
         }catch (RuntimeException rtex){
@@ -52,7 +53,11 @@ public class ReportController {
     }
 
     @GetMapping("")
-    public ResponseEntity<?> getAllReports() {
+    public ResponseEntity<?> getAllReports(@RequestHeader("Authorization") String token) {
+
+        if(!jwtService.isAdmin(token))
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(Map.of("error", "You are not allowed to access this information"));
+
         List<Report> reports = reportService.getReports();
         if(reports.isEmpty())
             return ResponseEntity.noContent().build();
@@ -61,8 +66,11 @@ public class ReportController {
     }
 
     @GetMapping("/get")
-    public ResponseEntity<?> getReportById(@RequestParam("id") Long id){
+    public ResponseEntity<?> getReportById(@RequestHeader("Authorization") String token, @RequestParam("id") Long id){
         try{
+            if(!jwtService.isAdmin(token))
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(Map.of("error", "You are not allowed to access this information"));
+
             Report report = reportService.getReportById(id);
             return ResponseEntity.ok().body(Map.of("report", new ReportDto(report)));
         }catch (RuntimeException rtex){
@@ -74,8 +82,11 @@ public class ReportController {
     }
 
     @DeleteMapping("/delete")
-    public ResponseEntity<?> deleteReport(@RequestParam("id") Long reportId) {
+    public ResponseEntity<?> deleteReport(@RequestHeader("Authorization") String token, @RequestParam("id") Long reportId) {
         try{
+            if(!jwtService.isAdmin(token))
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(Map.of("error", "You are not allowed to access this information"));
+
             reportService.deleteReportById(reportId);
             return ResponseEntity.noContent().build();
         }catch (RuntimeException rtex){

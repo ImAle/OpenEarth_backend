@@ -24,13 +24,13 @@ public class MessageController {
     private SimpMessagingTemplate messagingTemplate;
 
     @PostMapping("/send")
-    public ResponseEntity<?> sendMessage(@RequestBody MessageDto messageDto, @RequestHeader("Authorization") String token){
+    public ResponseEntity<?> sendMessage(@RequestBody MessageDto message, @RequestHeader("Authorization") String token){
         Long senderId = messageService.getReceiverId(token);
-        messageDto.setSenderId(senderId);
+        message.setSenderId(senderId);
 
-        Message message = messageService.saveMessage(messageDto);
+        Message m = messageService.saveMessage(message);
 
-        messagingTemplate.convertAndSendToUser(messageDto.getReceiverId().toString(), "/queue/messages", message);
+        messagingTemplate.convertAndSendToUser(message.getReceiverId().toString(), "/queue/messages", m);
         return ResponseEntity.ok().build();
     }
 

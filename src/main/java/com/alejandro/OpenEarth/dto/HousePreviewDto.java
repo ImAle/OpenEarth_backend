@@ -20,17 +20,20 @@ public class HousePreviewDto {
     private String title;
     private String country;
     private String location;
-    private String coordinates;
+    private double latitude;
+    private double longitude;
     private double price;
     private String currency;
     private Set<String> pictures = new HashSet<>();
 
-    public HousePreviewDto(House house){
+    public HousePreviewDto(House house, String currency){
         this.setId(house.getId());
         this.setTitle(house.getTitle());
         this.setCountry(house.getCountry().getFormattedName());
         this.setLocation(house.getLocation());
-        this.setCoordinates(house.getCoordinates());
+        this.setLatitude(house.getLatitude());
+        this.setLongitude(house.getLongitude());
+        this.currency = currency;
         this.setPictures(house.getPictures()
                 .stream().map(Picture::getUrl)
                 .collect(Collectors.toSet()));

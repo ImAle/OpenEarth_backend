@@ -36,7 +36,7 @@ public class RentController {
     private JwtService jwtService;
 
     @PostMapping("/create")
-    public ResponseEntity<?> createRent(@RequestHeader("Authorization") String token, @Valid @RequestBody RentCreationDto rentDto, BindingResult result) {
+    public ResponseEntity<?> createRent(@RequestHeader("Authorization") String token, @Valid @RequestBody RentCreationDto rent, BindingResult result) {
         try{
             if(result.hasErrors())
                 return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(result.getAllErrors());
@@ -44,8 +44,8 @@ public class RentController {
             if(!jwtService.isGuest(token))
                 return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("You are not allowed to perform this operation");
 
-            Rent rent = rentService.createRent(token, rentDto);
-            return ResponseEntity.status(HttpStatus.CREATED).body(Map.of("rent", rent));
+            Rent r = rentService.createRent(token, rent);
+            return ResponseEntity.status(HttpStatus.CREATED).body(Map.of("rent", r));
         }catch (RuntimeException rtex){
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(rtex.getMessage());
         }catch (Exception e){

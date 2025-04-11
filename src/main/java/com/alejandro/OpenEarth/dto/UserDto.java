@@ -3,12 +3,10 @@ package com.alejandro.OpenEarth.dto;
 import com.alejandro.OpenEarth.entity.*;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.springframework.stereotype.Component;
 
 import java.util.HashSet;
 import java.util.Set;
 
-@Component
 @Data
 @NoArgsConstructor
 public class UserDto {

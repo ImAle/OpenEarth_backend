@@ -1,7 +1,6 @@
 package com.alejandro.OpenEarth.serviceImpl;
 
 import com.alejandro.OpenEarth.service.CurrencyService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
@@ -10,8 +9,11 @@ import java.util.Map;
 @Service("currencyService")
 public class CurrencyServiceImpl implements CurrencyService {
 
-    @Autowired
-    private RestTemplate restTemplate;
+    private final RestTemplate restTemplate;
+
+    public CurrencyServiceImpl() {
+        this.restTemplate = new RestTemplate();
+    }
 
     @Override
     public double getPriceInEUR(String currency, double price) {

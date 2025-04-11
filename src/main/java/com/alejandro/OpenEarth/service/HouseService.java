@@ -16,14 +16,15 @@ public interface HouseService {
     House create(String token, HouseCreationDto houseDto, MultipartFile[] images);
     House getHouseById(Long id);
     Set<House> getHouses();
-    List<HousePreviewDto> getAllAvailableHouses();
-    List<HousePreviewDto> getFilteredHouses(Country country, Double minPrice, Double maxPrice, Integer beds, Integer guests, HouseCategory category);
+    List<HousePreviewDto> getAllAvailableHouses(String currency);
+    List<HousePreviewDto> getHousesNearTo(double latitude, double longitude, double km);
+    List<HousePreviewDto> getFilteredHouses(Country country, Double minPrice, Double maxPrice, Integer beds, Integer guests, HouseCategory category, String currency);
     HouseStatus[] getHouseStatuses();
     List<Long> getIdHousesByOwnerId(Long ownerId);
     Set<House> getHousesofLoggedUser(String token);
     boolean isMyHouse(String token, Long houseId);
     HouseCategory[] getHouseCategories();
-    Country[] getCountries();
+    String[] getCountries();
     House updateHouse(HouseUpdateDto houseDto, Long id, List<MultipartFile> newPictures);
     void deleteHouseById(Long id);
 }

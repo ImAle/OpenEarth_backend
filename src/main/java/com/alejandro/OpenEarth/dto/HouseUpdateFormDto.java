@@ -27,7 +27,7 @@ public class HouseUpdateFormDto {
     private String status;
     private Set<PictureDto> pictures;
 
-    public HouseUpdateFormDto(House house) {
+    public HouseUpdateFormDto(House house, String currency) {
         this.setTitle(house.getTitle());
         this.setDescription(house.getDescription());
         this.setGuests(house.getGuests());
@@ -36,6 +36,7 @@ public class HouseUpdateFormDto {
         this.setBathrooms(house.getBathrooms());
         this.setCategory(house.getCategory().toString());
         this.setStatus(house.getStatus().toString());
+        this.currency = currency;
 
         Set<PictureDto> pictures = new HashSet<>();
         for(Picture picture : house.getPictures()) {

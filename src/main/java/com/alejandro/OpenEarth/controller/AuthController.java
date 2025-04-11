@@ -2,6 +2,7 @@ package com.alejandro.OpenEarth.controller;
 
 import com.alejandro.OpenEarth.dto.UserCreationDto;
 import com.alejandro.OpenEarth.serviceImpl.AuthService;
+import com.alejandro.OpenEarth.serviceImpl.JwtService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -20,6 +21,10 @@ public class AuthController {
     @Autowired
     @Qualifier("authService")
     private AuthService authService;
+
+    @Autowired
+    @Qualifier("jwtService")
+    private JwtService jwtService;
 
     @PostMapping("/login")
     public ResponseEntity<?> login(@RequestParam("email") String email, @RequestParam("password") String password){
@@ -47,4 +52,10 @@ public class AuthController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }
+
+    @GetMapping("/role")
+    public ResponseEntity<?> getRole(@RequestHeader("Authorization") String token){
+        return ResponseEntity.ok().body(Map.of("role", jwtService.getUser(token).getRole()));
+    }
+
 }

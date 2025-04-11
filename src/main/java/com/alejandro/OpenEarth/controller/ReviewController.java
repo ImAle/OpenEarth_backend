@@ -28,7 +28,7 @@ public class ReviewController {
     private JwtService jwtService;
 
     @PostMapping("/create")
-    public ResponseEntity<?> create(@RequestHeader("Authorization") String token, @Valid @RequestBody ReviewCreationDto reviewDto, BindingResult result) {
+    public ResponseEntity<?> create(@RequestHeader("Authorization") String token, @Valid @RequestBody ReviewCreationDto review, BindingResult result) {
         try{
             if(result.hasErrors())
                 return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(result.getAllErrors());
@@ -36,8 +36,8 @@ public class ReviewController {
             if(!Objects.equals(jwtService.getUser(token).getId(), jwtService.getUser(token).getId()))
                 return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("You can not write a review on behalf of someone else");
 
-            Review review = reviewService.createReview(token, reviewDto);
-            return ResponseEntity.status(HttpStatus.CREATED).body(Map.of("review", review));
+            Review rev = reviewService.createReview(token, review);
+            return ResponseEntity.status(HttpStatus.CREATED).body(Map.of("review", rev));
         }catch (RuntimeException rtex){
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(rtex.getMessage());
         }catch (Exception e){

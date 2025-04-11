@@ -8,6 +8,7 @@ import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Data
 @NoArgsConstructor
@@ -24,15 +25,16 @@ public class HouseDetailsDto {
     private String currency;
     private String country;
     private String location;
-    private String coordinates;
+    private double latitude;
+    private double longitude;
     private HouseCategory category;
     private HouseStatus status;
     private LocalDate creationDate;
     private Set<PictureDto> pictures = new HashSet<>();
-    private UserDto owner;
+    private UserInfoDto owner;
     private List<ReviewDto> reviews = new ArrayList<>();
 
-    public HouseDetailsDto(House house) {
+    public HouseDetailsDto(House house, String currency) {
         this.id = house.getId();
         this.title = house.getTitle();
         this.description = house.getDescription();
@@ -42,12 +44,13 @@ public class HouseDetailsDto {
         this.bathrooms = house.getBathrooms();
         this.country = house.getCountry().getFormattedName();
         this.location = house.getLocation();
-        this.coordinates = house.getCoordinates();
+        this.latitude = house.getLatitude();
+        this.longitude = house.getLongitude();
         this.category = house.getCategory();
         this.status = house.getStatus();
+        this.currency = currency;
         this.creationDate = house.getCreationDate();
-        this.setOwner(new UserDto(house.getOwner()));
-
+        this.setOwner(new UserInfoDto(house.getOwner()));
         double price = house.getPrice();
 
         if(!Objects.equals(this.currency, "EUR")){
@@ -57,17 +60,15 @@ public class HouseDetailsDto {
 
         this.price = price;
 
-
         List<ReviewDto> reviews = house.getReviews().stream().map(ReviewDto::new).toList();
         this.setReviews(reviews);
+        this.pictures = house.getPictures()
+                .stream()
+                .map(p -> new PictureDto(p.getId(), p.getUrl()))
+                .collect(Collectors.toSet());
 
-        Set<PictureDto> pictures = new HashSet<>();
-        for(Picture picture : house.getPictures()){
-            pictures.add(new PictureDto(picture.getId(), picture.getUrl()));
-        }
 
         this.setPictures(pictures);
-
     }
 
 }

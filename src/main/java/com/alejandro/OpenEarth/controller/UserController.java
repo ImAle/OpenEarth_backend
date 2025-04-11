@@ -30,7 +30,9 @@ public class UserController {
     @Autowired
     @Qualifier("jwtService")
     private JwtService jwtService;
+
     @Autowired
+    @Qualifier("authService")
     private AuthService authService;
 
     @PostMapping("/activate")
@@ -87,7 +89,7 @@ public class UserController {
     }
 
     @PutMapping("/update")
-    public ResponseEntity<?> updateUser(@RequestHeader("Authorization") String token, @Valid @RequestBody UserUpdateDto userDto, BindingResult result, @RequestParam("id") Long id, @RequestParam(value = "picture", required = false) MultipartFile picture){
+    public ResponseEntity<?> updateUser(@RequestHeader("Authorization") String token, @Valid @RequestBody UserUpdateDto user, BindingResult result, @RequestParam("id") Long id, @RequestParam(value = "picture", required = false) MultipartFile picture){
         try{
             if(result.hasErrors())
                 return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(result.getAllErrors());
@@ -95,7 +97,7 @@ public class UserController {
             if (!jwtService.isThatMe(token, id))
                 return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(Map.of("message", "You are not allowed to update someone else"));
 
-            authService.updateUser(userDto, id, picture);
+            authService.updateUser(user, id, picture);
             return ResponseEntity.ok().body(Map.of("message", "The user has been updated successfully"));
         }catch (Exception ex){
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(Map.of("Error", ex.getMessage()));

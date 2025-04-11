@@ -1,6 +1,5 @@
 package com.alejandro.OpenEarth.entity;
 
-import com.alejandro.OpenEarth.dto.HouseCreationDto;
 import jakarta.persistence.*;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -21,7 +20,8 @@ public class House {
     private Long id;
     @Column(nullable = false)
     private String title;
-    @Column(nullable = false)
+    @Lob
+    @Column(nullable = false, columnDefinition = "TEXT")
     private String description;
     @Column(nullable = false)
     private int guests;
@@ -38,7 +38,8 @@ public class House {
     private Country country;
     @Column(nullable = false)
     private String location;
-    private String coordinates;
+    private double latitude;
+    private double longitude;
     @Enumerated(EnumType.STRING)
     private HouseCategory category;
     @Enumerated(EnumType.STRING)

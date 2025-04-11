@@ -16,7 +16,7 @@ public class HouseUpdateDto {
     @Size(min = 2, max = 100, message = "title should be between 2 and 100 characters")
     private String title;
     @NotBlank(message = "Description is required")
-    @Size(min = 100, max = 1200, message = "Description must be between 100 and 1200 characters")
+    @Size(min = 100, max = 65530, message = "Description must be between 100 and 65530 characters")
     private String description;
     @NotBlank(message = "Number of guests is required")
     @Size(min = 1, message = "The number of guest must be higher or equals to 1")

@@ -1,5 +1,6 @@
 package com.alejandro.OpenEarth.repository;
 
+import com.alejandro.OpenEarth.dto.HousePreviewDto;
 import com.alejandro.OpenEarth.entity.Country;
 import com.alejandro.OpenEarth.entity.House;
 import com.alejandro.OpenEarth.entity.HouseCategory;
@@ -36,5 +37,10 @@ public interface HouseRepository extends JpaRepository<House, Long> {
             @Param("maxPrice") Double maxPrice, @Param("beds") Integer beds, @Param("guests") Integer guests,
             @Param("category") HouseCategory category);
 
+    @Query("SELECT h FROM House h WHERE h.latitude BETWEEN :minLat AND :maxLat AND h.longitude BETWEEN :minLng AND :maxLng")
+    List<HousePreviewDto> findInArea(@Param("minLat") double minLat,
+                                     @Param("maxLat") double maxLat,
+                                     @Param("minLng") double minLng,
+                                     @Param("maxLng") double maxLng);
 
 }

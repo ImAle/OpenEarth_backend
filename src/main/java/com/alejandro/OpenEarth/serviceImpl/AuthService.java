@@ -15,7 +15,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDate;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -116,12 +115,10 @@ public class AuthService {
     }
 
     private void updatePicture(User user, MultipartFile picture) {
-        if (picture != null) {
-            if (user.getPicture() != null) {
-                pictureService.delete(user.getPicture());
-            }
-            pictureService.updateUserPicture(picture, user);
-        }
+        if (user.getPicture() != null)
+            pictureService.delete(user.getPicture());
+
+        pictureService.updateUserPicture(picture, user);
     }
 
     public User updateUser(UserUpdateDto userDto, Long id, MultipartFile picture) {
@@ -135,7 +132,9 @@ public class AuthService {
             throw new RuntimeException(errors.toString());
         }
 
-        updatePicture(user, picture);
+        if(picture != null)
+            updatePicture(user, picture);
+
         return userService.saveUser(user);
     }
 
