@@ -43,8 +43,9 @@ public class HouseController {
             if(pictures.length == 0)
                 return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Map.of("errors", "You must provide at least one picture"));
 
-            House house = houseService.create(token, houseDto, pictures);
-            return ResponseEntity.status(HttpStatus.CREATED).body(Map.of("house", house));
+            houseService.create(token, houseDto, pictures);
+
+            return ResponseEntity.status(HttpStatus.CREATED).body(Map.of("message", "house registered successfully"));
         }catch (RuntimeException rtex){
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(Map.of("error", rtex.getMessage()));
         }catch (Exception e){

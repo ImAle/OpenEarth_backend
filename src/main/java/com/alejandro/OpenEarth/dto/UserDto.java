@@ -4,8 +4,8 @@ import com.alejandro.OpenEarth.entity.*;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.util.HashSet;
-import java.util.Set;
+import java.util.ArrayList;
+import java.util.List;
 
 @Data
 @NoArgsConstructor
@@ -19,9 +19,9 @@ public class UserDto {
     private UserRole role;
     private boolean enabled;
     private String picture;
-    private Set<House> houses = new HashSet<>();
-    private Set<Rent> rents = new HashSet<>();
-    private Set<Review> reviews = new HashSet<>();
+    private List<HousePreviewDto> houses = new ArrayList<>();
+    private List<RentDto> rents = new ArrayList<>();
+    private List<ReviewDto> reviews = new ArrayList<>();
 
     public UserDto(User user) {
         this.setId(user.getId());
@@ -32,9 +32,10 @@ public class UserDto {
         this.setEnabled(user.isEnabled());
         this.setRole(user.getRole());
         this.setEnabled(user.isEnabled());
-        this.setHouses(user.getHouses());
-        this.setRents(user.getRents());
-        this.setReviews(user.getReviews());
+
+        this.setHouses(user.getHouses().stream().map(h -> new HousePreviewDto(h, "EUR")).toList());
+        this.setRents(user.getRents().stream().map(RentDto::new).toList());
+        this.setReviews(user.getReviews().stream().map(ReviewDto::new).toList());
         this.setPicture(user.getPicture() != null ? user.getPicture().getUrl() : null);
     }
 }

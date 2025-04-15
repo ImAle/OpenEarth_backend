@@ -81,7 +81,8 @@ public class UserController {
     @GetMapping("/details")
     public ResponseEntity<?> getUserDetails(@RequestParam("id") long userId){
         try{
-            User user = userService.getUserById(userId);
+            User user = userService.getUserFullDetailById(userId);
+
             return ResponseEntity.ok().body(Map.of("user", new UserDto(user)));
         }catch(RuntimeException rtex){
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(Map.of("Error", rtex.getMessage()));

@@ -1,13 +1,11 @@
 package com.alejandro.OpenEarth.serviceImpl;
 
-import com.alejandro.OpenEarth.dto.GeolocationDto;
 import com.alejandro.OpenEarth.dto.HouseCreationDto;
 import com.alejandro.OpenEarth.dto.HousePreviewDto;
 import com.alejandro.OpenEarth.dto.HouseUpdateDto;
 import com.alejandro.OpenEarth.entity.*;
 import com.alejandro.OpenEarth.repository.HouseRepository;
 import com.alejandro.OpenEarth.service.CurrencyService;
-import com.alejandro.OpenEarth.service.GeolocationService;
 import com.alejandro.OpenEarth.service.HouseService;
 import com.alejandro.OpenEarth.service.PictureService;
 import com.alejandro.OpenEarth.upload.StorageService;
@@ -36,12 +34,12 @@ public class HouseServiceImpl implements HouseService {
     private PictureService pictureService;
 
     @Autowired
-    @Qualifier("currencyService")
-    private CurrencyService currencyService;
+    @Qualifier("userService")
+    private UserService userService;
 
     @Autowired
-    @Qualifier("geolocationService")
-    private GeolocationService geolocationService;
+    @Qualifier("currencyService")
+    private CurrencyService currencyService;
 
     @Autowired
     @Qualifier("jwtService")
@@ -49,7 +47,8 @@ public class HouseServiceImpl implements HouseService {
 
     @Override
     public House create(String token, HouseCreationDto houseDto, MultipartFile[] images) {
-        User owner = jwtService.getUser(token);
+        Long owner = jwtService.getUserId(token);
+        User user = userService.getUserFullDetailById(owner);
         House house = new House();
 
         house.setTitle(houseDto.getTitle());
@@ -59,7 +58,6 @@ public class HouseServiceImpl implements HouseService {
         house.setBeds(houseDto.getBeds());
         house.setBathrooms(houseDto.getBathrooms());
         house.setLocation(houseDto.getLocation());
-        house.setCategory(HouseCategory.valueOf(houseDto.getCategory()));
         house.setCreationDate(LocalDate.now());
         house.setLastUpdateDate(LocalDate.now());
         house.setCountry(houseDto.getCountry());
@@ -69,7 +67,7 @@ public class HouseServiceImpl implements HouseService {
         house.setCategory(HouseCategory.valueOf(houseDto.getCategory()));
         house.setRents(null);
         house.setReviews(null);
-        house.setOwner(owner);
+        house.setOwner(user);
 
         double price = houseDto.getPrice();
         house.setPrice(price);
@@ -93,6 +91,10 @@ public class HouseServiceImpl implements HouseService {
         }
 
         house.setPictures(pictures);
+
+        user.getHouses().add(house);
+        userService.saveUser(user);
+
         return houseRepository.save(house);
 
     }

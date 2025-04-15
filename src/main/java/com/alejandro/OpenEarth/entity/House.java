@@ -63,12 +63,18 @@ public class House {
     @Override
     public boolean equals(Object o) {
         if (!(o instanceof House house)) return false;
-        return guests == house.guests && bedrooms == house.bedrooms && beds == house.beds && bathrooms == house.bathrooms && Objects.equals(location, house.location) && Objects.equals(owner, house.owner) && Objects.equals(rents, house.rents);
+        return guests == house.guests &&
+                bedrooms == house.bedrooms &&
+                beds == house.beds &&
+                bathrooms == house.bathrooms &&
+                Objects.equals(location, house.location) &&
+                (owner != null ? owner.getId().equals(house.owner != null ? house.owner.getId() : null) : house.owner == null) &&
+                Objects.equals(rents, house.rents);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(guests, bedrooms, beds, bathrooms, location, owner, rents);
+        return Objects.hash(guests, bedrooms, beds, bathrooms, location, (owner != null ? owner.getId() : 0), rents);
     }
 }
 

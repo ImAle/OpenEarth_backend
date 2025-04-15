@@ -1,22 +1,19 @@
 package com.alejandro.OpenEarth.serviceImpl;
 
-import com.alejandro.OpenEarth.dto.UserUpdateDto;
-import com.alejandro.OpenEarth.entity.Picture;
+import com.alejandro.OpenEarth.dto.HousePreviewDto;
+import com.alejandro.OpenEarth.entity.House;
 import com.alejandro.OpenEarth.repository.UserRepository;
 import com.alejandro.OpenEarth.entity.User;
 import com.alejandro.OpenEarth.service.PictureService;
-import com.alejandro.OpenEarth.upload.StorageService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
-import org.springframework.security.core.parameters.P;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 import java.util.Optional;
@@ -53,6 +50,14 @@ public class UserService implements UserDetailsService {
 
     public User getUserById(Long id){
         Optional<User> user = userRepository.findById(id);
+        if(user.isEmpty())
+            throw new RuntimeException("User not found");
+
+        return user.get();
+    }
+
+    public User getUserFullDetailById(Long id){
+        Optional<User> user = userRepository.findFullDetailUser(id);
         if(user.isEmpty())
             throw new RuntimeException("User not found");
 

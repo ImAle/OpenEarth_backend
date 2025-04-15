@@ -44,8 +44,8 @@ public class HouseCreationDto {
     private String location;
     @ValidEnum(enumClass = HouseCategory.class, message = "Invalid house category")
     private String category;
-    @NotBlank(message = "Latitude is required")
+    @NotNull(message = "Latitude is required")
     private double latitude;
-    @NotBlank(message = "Longitude is required")
+    @NotNull(message = "Longitude is required")
     private double longitude;
 }

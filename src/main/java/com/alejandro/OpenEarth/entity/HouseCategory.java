@@ -14,7 +14,6 @@ public enum HouseCategory {
     LUXE,
     AMAZING_VIEWS,
     AMAZING_POOLS,
-    BEACHFRONT,
     TINY_HOMES,
     CAVES,
     ARCTIC,

@@ -49,6 +49,10 @@ public class JwtService {
         return userService.getUserByEmail(extractUsername(token));
     }
 
+    public Long getUserId(String token) {
+        return this.getUser(token).getId();
+    }
+
     public String extractUsername(String token) {
         return getClaims(token).getSubject();
     }

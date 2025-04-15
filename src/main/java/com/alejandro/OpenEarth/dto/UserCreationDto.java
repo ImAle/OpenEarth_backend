@@ -1,6 +1,5 @@
 package com.alejandro.OpenEarth.dto;
 
-import com.alejandro.OpenEarth.entity.HouseCategory;
 import com.alejandro.OpenEarth.entity.UserRole;
 import com.alejandro.OpenEarth.validation.ValidEnum;
 import jakarta.validation.constraints.NotBlank;
