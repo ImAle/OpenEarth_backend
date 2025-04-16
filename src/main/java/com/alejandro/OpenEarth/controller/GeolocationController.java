@@ -21,9 +21,9 @@ public class GeolocationController {
     private GeolocationService geolocationService;
 
     @GetMapping("/search")
-    public ResponseEntity<?> getCoordinates(@RequestParam("country") String country, @RequestParam("location") String location) {
+    public ResponseEntity<?> getCoordinates(@RequestParam("location") String location) {
         try{
-            Object geolocationDto = geolocationService.getCoordinates(country, location);
+            Object geolocationDto = geolocationService.getCoordinates(location);
 
             if (geolocationDto == null)
                 return ResponseEntity.status(HttpStatus.BAD_GATEWAY).build();

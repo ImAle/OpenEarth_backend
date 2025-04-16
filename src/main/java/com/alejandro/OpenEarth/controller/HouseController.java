@@ -1,13 +1,11 @@
 package com.alejandro.OpenEarth.controller;
 
 import com.alejandro.OpenEarth.dto.*;
-import com.alejandro.OpenEarth.entity.Country;
 import com.alejandro.OpenEarth.entity.House;
 import com.alejandro.OpenEarth.entity.HouseCategory;
 import com.alejandro.OpenEarth.entity.HouseStatus;
 import com.alejandro.OpenEarth.service.HouseService;
 import com.alejandro.OpenEarth.serviceImpl.CurrencyServiceImpl;
-import com.alejandro.OpenEarth.upload.StorageService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -20,7 +18,6 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 @RestController
 @RequestMapping("/api/house")
@@ -54,7 +51,7 @@ public class HouseController {
     }
 
     @GetMapping("")
-    public ResponseEntity<?> getHouses(@RequestParam(required = false) String location, @RequestParam(required = false) Country country,
+    public ResponseEntity<?> getHouses(@RequestParam(required = false) String location,
                                        @RequestParam(required = false) Double minPrice, @RequestParam(required = false) Double maxPrice,
                                        @RequestParam(required = false) Integer beds, @RequestParam(required = false) Integer guests,
                                        @RequestParam(required = false) HouseCategory category, @RequestParam(required = false) String currency) {
@@ -69,7 +66,7 @@ public class HouseController {
                 minPrice = currencyService.getPriceInEUR(currency, minPrice);
         }
 
-        List<HousePreviewDto> houses = houseService.getFilteredHouses(country, location, minPrice, maxPrice, beds, guests, category, currency);
+        List<HousePreviewDto> houses = houseService.getFilteredHouses(location, minPrice, maxPrice, beds, guests, category, currency);
 
         if(houses.isEmpty())
             return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
@@ -93,15 +90,6 @@ public class HouseController {
             return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
 
         return ResponseEntity.ok().body(Map.of("statuses", statuses));
-    }
-
-    @GetMapping("/countries")
-    public ResponseEntity<?> getCountries() {
-        String[] countries = houseService.getCountries();
-        if(countries.length == 0)
-            return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
-
-        return ResponseEntity.ok().body(Map.of("countries", countries));
     }
 
     @GetMapping("/details")

@@ -23,7 +23,6 @@ public class HouseDetailsDto {
     private int bathrooms;
     private double price;
     private String currency;
-    private String country;
     private String location;
     private double latitude;
     private double longitude;
@@ -42,7 +41,6 @@ public class HouseDetailsDto {
         this.bedrooms = house.getBedrooms();
         this.beds = house.getBeds();
         this.bathrooms = house.getBathrooms();
-        this.country = house.getCountry().getFormattedName();
         this.location = house.getLocation();
         this.latitude = house.getLatitude();
         this.longitude = house.getLongitude();

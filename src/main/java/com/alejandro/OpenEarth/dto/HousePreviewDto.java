@@ -18,7 +18,6 @@ public class HousePreviewDto {
 
     private Long id;
     private String title;
-    private String country;
     private String location;
     private double latitude;
     private double longitude;
@@ -29,7 +28,6 @@ public class HousePreviewDto {
     public HousePreviewDto(House house, String currency){
         this.setId(house.getId());
         this.setTitle(house.getTitle());
-        this.setCountry(house.getCountry().getFormattedName());
         this.setLocation(house.getLocation());
         this.setLatitude(house.getLatitude());
         this.setLongitude(house.getLongitude());

@@ -17,8 +17,8 @@ public class GeolocationServiceImpl implements GeolocationService {
     @Autowired
     private RestTemplate restTemplate ;
 
-    public Object getApiSearchResponse(String country, String location){
-        String query = country.strip().replace(" ", "_") + "_" + location.strip().replace(" ", "_");
+    public Object getApiSearchResponse(String location){
+        String query = location.strip().replace(" ", "_");
         String url = UriComponentsBuilder.fromUriString("https://nominatim.openstreetmap.org/search")
                 .queryParam("q", query)
                 .queryParam("format", "json")
@@ -50,8 +50,8 @@ public class GeolocationServiceImpl implements GeolocationService {
         return restTemplate.getForObject(url, Object.class);
     }
 
-    public Object getCoordinates(String country, String location){
-        Object response = getApiSearchResponse(country, location);
+    public Object getCoordinates(String location){
+        Object response = getApiSearchResponse(location);
         Map<String, Object> answer = (Map<String, Object>) response;
 
         GeolocationDto dto = new GeolocationDto();
@@ -62,8 +62,8 @@ public class GeolocationServiceImpl implements GeolocationService {
         return dto;
     }
 
-    public Double[] getArea(String country, String location){
-        Object response = getApiSearchResponse(country, location);
+    public Double[] getArea(String location){
+        Object response = getApiSearchResponse(location);
         Map<String, Object> answer = (Map<String, Object>) response;
 
         Double[] coordinates = (Double[]) (answer.get("boundingbox"));

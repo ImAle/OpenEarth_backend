@@ -65,7 +65,6 @@ public class HouseServiceImpl implements HouseService {
         house.setLocation(houseDto.getLocation());
         house.setCreationDate(LocalDate.now());
         house.setLastUpdateDate(LocalDate.now());
-        house.setCountry(houseDto.getCountry());
         house.setStatus(HouseStatus.AVAILABLE);
         house.setLatitude(houseDto.getLatitude());
         house.setLongitude(houseDto.getLongitude());
@@ -119,24 +118,32 @@ public class HouseServiceImpl implements HouseService {
     }
 
     @Override
-    public List<HousePreviewDto> getAllAvailableHouses(String currency) {
-        Set<House> houses = houseRepository.findByStatusAndEnabledOwners(HouseStatus.AVAILABLE);
-        return houses.stream().map(h -> new HousePreviewDto(h, currency)).toList();
+    public List<House> getAllAvailableHouses(String currency) {
+        return houseRepository.findByStatusAndEnabledOwners(HouseStatus.AVAILABLE);
     }
 
     @Override
     public List<HousePreviewDto> getHousesNearTo(double latitude, double longitude, double km){
         GeoUtils.BoundingBox box = GeoUtils.getBoundingBox(latitude, longitude, km);
+        List<House> houses = houseRepository.findInArea(
+                box.minLat(), box.maxLat(), box.minLng(), box.maxLng());
 
-        return houseRepository.findInArea(
-                box.minLat(), box.maxLat(), box.minLng(), box.maxLng()
-        );
+        return houses.stream().map(h -> new HousePreviewDto(h, "EUR")).toList();
     }
 
     @Override
-    public List<HousePreviewDto> getFilteredHouses(Country country, String location, Double minPrice, Double maxPrice, Integer beds, Integer guests, HouseCategory category, String currency) {
-        List<House> houses = houseRepository.findHousesByFilters(country, minPrice, maxPrice, beds, guests, category);
-        Double[] coordinates = geolocationService.getArea(country.getFormattedName(), location);
+    public List<HousePreviewDto> getFilteredHouses(String location, Double minPrice, Double maxPrice, Integer beds, Integer guests, HouseCategory category, String currency) {
+        Double minLat = null, maxLat = null, minLng = null, maxLng = null;
+
+        if(location != null && !location.isEmpty()) {
+            Double[] coordinates = geolocationService.getArea(location);
+            minLat = coordinates[0];
+            maxLat = coordinates[1];
+            minLng = coordinates[2];
+            maxLng = coordinates[3];
+        }
+
+        List<House> houses = houseRepository.findHousesByFilters(minPrice, maxPrice, beds, guests, category, minLat, maxLat, minLng, maxLng);
 
         return houses.stream().map(h -> new HousePreviewDto(h, currency)).toList();
     }
@@ -149,11 +156,6 @@ public class HouseServiceImpl implements HouseService {
     @Override
     public HouseCategory[] getHouseCategories() {
         return HouseCategory.values();
-    }
-
-    @Override
-    public String[] getCountries() {
-        return Arrays.stream(Country.values()).map(Country::getFormattedName).toArray(String[]::new);
     }
 
     @Override
