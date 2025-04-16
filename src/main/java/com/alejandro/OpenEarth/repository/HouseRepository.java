@@ -32,18 +32,12 @@ public interface HouseRepository extends JpaRepository<House, Long> {
       AND (:beds IS NULL OR h.beds = :beds)
       AND (:guests IS NULL OR h.guests = :guests)
       AND (:category IS NULL OR h.category = :category)
-      AND (:minLat IS NULL OR h.latitude BETWEEN :minLat AND :maxLat)
-      AND (:minLng IS NULL OR h.longitude BETWEEN :minLng AND :maxLng)
     """)
     List<House> findHousesByFilters(@Param("minPrice") Double minPrice,
                                          @Param("maxPrice") Double maxPrice,
                                          @Param("beds") Integer beds,
                                          @Param("guests") Integer guests,
-                                         @Param("category") HouseCategory category,
-                                         @Param("minLat") Double minLat,
-                                         @Param("maxLat") Double maxLat,
-                                         @Param("minLng") Double minLng,
-                                         @Param("maxLng") Double maxLng);
+                                         @Param("category") HouseCategory category);
 
     @Query("SELECT h FROM House h WHERE h.latitude BETWEEN :minLat AND :maxLat AND h.longitude BETWEEN :minLng AND :maxLng")
     List<House> findInArea(@Param("minLat") double minLat,

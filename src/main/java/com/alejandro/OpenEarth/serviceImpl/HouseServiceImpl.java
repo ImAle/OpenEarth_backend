@@ -5,10 +5,7 @@ import com.alejandro.OpenEarth.dto.HousePreviewDto;
 import com.alejandro.OpenEarth.dto.HouseUpdateDto;
 import com.alejandro.OpenEarth.entity.*;
 import com.alejandro.OpenEarth.repository.HouseRepository;
-import com.alejandro.OpenEarth.service.CurrencyService;
-import com.alejandro.OpenEarth.service.GeolocationService;
-import com.alejandro.OpenEarth.service.HouseService;
-import com.alejandro.OpenEarth.service.PictureService;
+import com.alejandro.OpenEarth.service.*;
 import com.alejandro.OpenEarth.upload.StorageService;
 import com.alejandro.OpenEarth.utility.GeoUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -41,6 +38,10 @@ public class HouseServiceImpl implements HouseService {
     @Autowired
     @Qualifier("geolocationService")
     private GeolocationService geolocationService;
+
+    @Autowired
+    @Qualifier("geoPolygonService")
+    private GeoPolygonService geoPolygonService;
 
     @Autowired
     @Qualifier("currencyService")
@@ -133,17 +134,13 @@ public class HouseServiceImpl implements HouseService {
 
     @Override
     public List<HousePreviewDto> getFilteredHouses(String location, Double minPrice, Double maxPrice, Integer beds, Integer guests, HouseCategory category, String currency) {
-        Double minLat = null, maxLat = null, minLng = null, maxLng = null;
+        List<House> houses = houseRepository.findHousesByFilters(minPrice, maxPrice, beds, guests, category);
 
         if(location != null && !location.isEmpty()) {
-            Double[] coordinates = geolocationService.getArea(location);
-            minLat = coordinates[0];
-            maxLat = coordinates[1];
-            minLng = coordinates[2];
-            maxLng = coordinates[3];
+            Object geoJson = geolocationService.getPolygonsFromLocation(location);
+            System.out.println(geoJson);
+            houses = geoPolygonService.filterHousesInPolygon(geoJson, houses);
         }
-
-        List<House> houses = houseRepository.findHousesByFilters(minPrice, maxPrice, beds, guests, category, minLat, maxLat, minLng, maxLng);
 
         return houses.stream().map(h -> new HousePreviewDto(h, currency)).toList();
     }
