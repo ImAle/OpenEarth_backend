@@ -17,7 +17,7 @@ public class GeolocationServiceImpl implements GeolocationService {
     @Autowired
     private RestTemplate restTemplate ;
 
-    public Object getCoordinates(String country, String location){
+    public Object getApiSearchResponse(String country, String location){
         String query = country.strip().replace(" ", "_") + "_" + location.strip().replace(" ", "_");
         String url = UriComponentsBuilder.fromUriString("https://nominatim.openstreetmap.org/search")
                 .queryParam("q", query)
@@ -37,14 +37,7 @@ public class GeolocationServiceImpl implements GeolocationService {
             throw new IllegalArgumentException("You need to provide a valid response. Whether it is from street, city, country or country, city, street");
         }
 
-        Map<String, Object> answer = response.getBody()[0];
-
-        GeolocationDto dto = new GeolocationDto();
-        dto.setLatitude((String) answer.get("lat"));
-        dto.setLongitude((String) answer.get("lon"));
-        dto.setLocation((String) answer.get("display_name"));
-
-        return dto;
+        return response.getBody()[0];
     }
 
     public Object getAddress(double latitude, double longitude){
@@ -55,6 +48,27 @@ public class GeolocationServiceImpl implements GeolocationService {
                 .toUriString();
 
         return restTemplate.getForObject(url, Object.class);
+    }
+
+    public Object getCoordinates(String country, String location){
+        Object response = getApiSearchResponse(country, location);
+        Map<String, Object> answer = (Map<String, Object>) response;
+
+        GeolocationDto dto = new GeolocationDto();
+        dto.setLatitude((String) answer.get("lat"));
+        dto.setLongitude((String) answer.get("lon"));
+        dto.setLocation((String) answer.get("display_name"));
+
+        return dto;
+    }
+
+    public Double[] getArea(String country, String location){
+        Object response = getApiSearchResponse(country, location);
+        Map<String, Object> answer = (Map<String, Object>) response;
+
+        Double[] coordinates = (Double[]) (answer.get("boundingbox"));
+
+        return coordinates;
     }
 
 }

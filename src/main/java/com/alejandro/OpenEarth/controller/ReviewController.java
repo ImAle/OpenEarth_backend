@@ -2,6 +2,8 @@ package com.alejandro.OpenEarth.controller;
 
 import com.alejandro.OpenEarth.dto.ReviewCreationDto;
 import com.alejandro.OpenEarth.entity.Review;
+import com.alejandro.OpenEarth.entity.User;
+import com.alejandro.OpenEarth.entity.UserRole;
 import com.alejandro.OpenEarth.service.ReviewService;
 import com.alejandro.OpenEarth.serviceImpl.JwtService;
 import jakarta.validation.Valid;
@@ -12,8 +14,10 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/review")

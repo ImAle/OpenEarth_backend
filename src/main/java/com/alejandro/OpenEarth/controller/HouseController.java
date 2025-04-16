@@ -54,10 +54,10 @@ public class HouseController {
     }
 
     @GetMapping("")
-    public ResponseEntity<?> getHouses(@RequestParam(required = false) Country country, @RequestParam(required = false) Double minPrice,
-                                       @RequestParam(required = false) Double maxPrice, @RequestParam(required = false) Integer beds,
-                                       @RequestParam(required = false) Integer guests, @RequestParam(required = false) HouseCategory category,
-                                       @RequestParam(required = false) String currency) {
+    public ResponseEntity<?> getHouses(@RequestParam(required = false) String location, @RequestParam(required = false) Country country,
+                                       @RequestParam(required = false) Double minPrice, @RequestParam(required = false) Double maxPrice,
+                                       @RequestParam(required = false) Integer beds, @RequestParam(required = false) Integer guests,
+                                       @RequestParam(required = false) HouseCategory category, @RequestParam(required = false) String currency) {
 
         if(currency == null || currency.isEmpty())
             currency = "EUR";
@@ -69,7 +69,7 @@ public class HouseController {
                 minPrice = currencyService.getPriceInEUR(currency, minPrice);
         }
 
-        List<HousePreviewDto> houses = houseService.getFilteredHouses(country, minPrice, maxPrice, beds, guests, category, currency);
+        List<HousePreviewDto> houses = houseService.getFilteredHouses(country, location, minPrice, maxPrice, beds, guests, category, currency);
 
         if(houses.isEmpty())
             return ResponseEntity.status(HttpStatus.NO_CONTENT).build();

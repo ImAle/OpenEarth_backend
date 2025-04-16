@@ -6,6 +6,7 @@ import com.alejandro.OpenEarth.dto.HouseUpdateDto;
 import com.alejandro.OpenEarth.entity.*;
 import com.alejandro.OpenEarth.repository.HouseRepository;
 import com.alejandro.OpenEarth.service.CurrencyService;
+import com.alejandro.OpenEarth.service.GeolocationService;
 import com.alejandro.OpenEarth.service.HouseService;
 import com.alejandro.OpenEarth.service.PictureService;
 import com.alejandro.OpenEarth.upload.StorageService;
@@ -36,6 +37,10 @@ public class HouseServiceImpl implements HouseService {
     @Autowired
     @Qualifier("userService")
     private UserService userService;
+
+    @Autowired
+    @Qualifier("geolocationService")
+    private GeolocationService geolocationService;
 
     @Autowired
     @Qualifier("currencyService")
@@ -129,8 +134,10 @@ public class HouseServiceImpl implements HouseService {
     }
 
     @Override
-    public List<HousePreviewDto> getFilteredHouses(Country country, Double minPrice, Double maxPrice, Integer beds, Integer guests, HouseCategory category, String currency) {
+    public List<HousePreviewDto> getFilteredHouses(Country country, String location, Double minPrice, Double maxPrice, Integer beds, Integer guests, HouseCategory category, String currency) {
         List<House> houses = houseRepository.findHousesByFilters(country, minPrice, maxPrice, beds, guests, category);
+        Double[] coordinates = geolocationService.getArea(country.getFormattedName(), location);
+
         return houses.stream().map(h -> new HousePreviewDto(h, currency)).toList();
     }
 
