@@ -39,7 +39,8 @@ public class JwtAuthFilter extends OncePerRequestFilter {
             "/api/user/details",
             "/api/house",
             "/api/house/status",
-            "/api/house/countries"
+            "/api/house/countries",
+            "/api/house/nearTo"
     );
 
     // If happens any error, this function is triggered to send token related errors.

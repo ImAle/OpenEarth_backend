@@ -16,7 +16,7 @@ public interface HouseService {
     House getHouseById(Long id);
     Set<House> getHouses();
     List<House> getAllAvailableHouses(String currency);
-    List<HousePreviewDto> getHousesNearTo(double latitude, double longitude, double km);
+    List<HousePreviewDto> getHousesNearTo(House house, double km);
     List<HousePreviewDto> getFilteredHouses(String location, Double minPrice, Double maxPrice, Integer beds, Integer guests, HouseCategory category, String currency);
     HouseStatus[] getHouseStatuses();
     List<Long> getIdHousesByOwnerId(Long ownerId);

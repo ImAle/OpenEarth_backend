@@ -124,10 +124,12 @@ public class HouseServiceImpl implements HouseService {
     }
 
     @Override
-    public List<HousePreviewDto> getHousesNearTo(double latitude, double longitude, double km){
-        GeoUtils.BoundingBox box = GeoUtils.getBoundingBox(latitude, longitude, km);
+    public List<HousePreviewDto> getHousesNearTo(House house, double km){
+        GeoUtils.BoundingBox box = GeoUtils.getBoundingBox(house.getLatitude(), house.getLongitude(), km);
         List<House> houses = houseRepository.findInArea(
                 box.minLat(), box.maxLat(), box.minLng(), box.maxLng());
+
+        houses.removeIf(h -> h.getId().equals(house.getId()));
 
         return houses.stream().map(h -> new HousePreviewDto(h, "EUR")).toList();
     }

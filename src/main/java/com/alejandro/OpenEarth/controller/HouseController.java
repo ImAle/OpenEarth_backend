@@ -74,6 +74,23 @@ public class HouseController {
         return ResponseEntity.ok().body(Map.of("houses", houses));
     }
 
+    @GetMapping("/nearTo")
+    public ResponseEntity<?> getHousesNearTo(@RequestParam("id") Long id, @RequestParam("km") double km){
+        try{
+            House house = houseService.getHouseById(id);
+            List<HousePreviewDto> houses = houseService.getHousesNearTo(house, km);
+
+            if(houses.isEmpty())
+                return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+
+            return ResponseEntity.ok().body(Map.of("houses", houses));
+        }catch(RuntimeException rtex){
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(Map.of("error", rtex.getMessage()));
+        }catch (Exception e){
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(Map.of("error", e.getMessage()));
+        }
+    }
+
     @GetMapping("/categories")
     public ResponseEntity<?> getCategories() {
         HouseCategory[] categories = houseService.getHouseCategories();
