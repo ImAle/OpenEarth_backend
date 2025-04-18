@@ -2,6 +2,7 @@ package com.alejandro.OpenEarth.serviceImpl;
 
 import com.alejandro.OpenEarth.dto.HousePreviewDto;
 import com.alejandro.OpenEarth.entity.House;
+import com.alejandro.OpenEarth.entity.UserRole;
 import com.alejandro.OpenEarth.repository.UserRepository;
 import com.alejandro.OpenEarth.entity.User;
 import com.alejandro.OpenEarth.service.PictureService;
@@ -45,7 +46,7 @@ public class UserService implements UserDetailsService {
     }
 
     public List<User> getUsers(){
-        return userRepository.findAll();
+        return userRepository.findByRoleNot(UserRole.ADMIN);
     }
 
     public User getUserById(Long id){

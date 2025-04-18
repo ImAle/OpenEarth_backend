@@ -36,8 +36,11 @@ public class UserController {
     private AuthService authService;
 
     @PostMapping("/activate")
-    public ResponseEntity<?> activateUser(@RequestParam("id") long userId){
+    public ResponseEntity<?> activateUser(@RequestHeader("Authorization") String token, @RequestParam("id") long userId){
         try{
+            if(!jwtService.isAdmin(token))
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("You are not allowed to perform this action");
+
             userService.activateUserById(userId);
             return ResponseEntity.ok().body(Map.of("message", "The user has been successfully activated"));
         }catch (UsernameNotFoundException unfex){
@@ -50,8 +53,11 @@ public class UserController {
     }
 
     @PostMapping("/deactivate")
-    public ResponseEntity<?> deactivateUser(@RequestParam("id") long userId){
+    public ResponseEntity<?> deactivateUser(@RequestHeader("Authorization") String token, @RequestParam("id") long userId){
         try{
+            if(!jwtService.isAdmin(token))
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("You are not allowed to perform this action");
+
             userService.deactivateUserById(userId);
             return ResponseEntity.ok().body(Map.of("message", "The user has been successfully deactivated"));
         }catch (UsernameNotFoundException unfex){
