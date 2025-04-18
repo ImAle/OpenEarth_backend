@@ -45,6 +45,9 @@ public class SecurityConfig {
                                 "/api/house/countries",
                                 "/api/house/status",
                                 "/api/house/nearTo",
+                                "/api/auth/forgot-password",
+                                "/api/auth/validateToken",
+                                "/api/auth/resetPassword",
                                 "/api/geo/**"
                                 ).permitAll()
 

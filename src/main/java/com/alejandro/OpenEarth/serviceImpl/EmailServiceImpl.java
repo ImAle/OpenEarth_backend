@@ -23,22 +23,36 @@ public class EmailServiceImpl implements EmailService {
     }
 
     @Override
-    public void wellcome_email(String to){
+    public void wellcomeEmail(String to){
         this.sendSimpleEmail(to, "Welcome to OpenEarth!",
                 "You have successfully registered! Start searching for your dream vacation home!");
 
     }
 
     @Override
-    public void rented_email(String to, String houseTitle) {
+    public void rentedEmail(String to, String houseTitle) {
         this.sendSimpleEmail(to, "Your Rented Dream Vacation home!",
                 houseTitle + " has been successfully rented!");
     }
 
     @Override
-    public void cancel_email(String to, String houseTitle) {
+    public void cancelEmail(String to, String houseTitle) {
         this.sendSimpleEmail(to, "The cancelation for " + houseTitle + " has been done!",
                 "You have successfully canceled your rent for " + houseTitle);
+    }
+
+    @Override
+    public void sendResetPasswordEmail(String to, String token){
+        String resetUrl = "http://localhost:4200/forgot-password?token=" + token;
+
+        this.sendSimpleEmail(to, "Password Reset Request",
+                "Click the following link to reset your password: \n" + resetUrl  +
+                        "\nIf you did not request a password reset, please ignore this email.");
+    }
+
+    @Override
+    public void sendSuccessfullPasswordReset(String to){
+        this.sendSimpleEmail(to, "Password successfully changed", "You have successfully changed your password!");
     }
 
 }

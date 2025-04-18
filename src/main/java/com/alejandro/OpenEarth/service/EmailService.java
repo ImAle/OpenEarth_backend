@@ -2,7 +2,9 @@ package com.alejandro.OpenEarth.service;
 
 public interface EmailService {
     void sendSimpleEmail(String to, String subject, String text);
-    void wellcome_email(String to);
-    void rented_email(String to, String houseTitle);
-    void cancel_email(String to, String houseTitle);
+    void wellcomeEmail(String to);
+    void rentedEmail(String to, String houseTitle);
+    void cancelEmail(String to, String houseTitle);
+    void sendResetPasswordEmail(String to, String token);
+    void sendSuccessfullPasswordReset(String to);
 }

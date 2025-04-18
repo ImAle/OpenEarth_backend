@@ -36,6 +36,16 @@ public class JwtService {
                 .signWith(secretKey)
                 .compact();
     }
+
+    public String generateToken(UserDetails user, long expirationTime){
+        return Jwts.builder()
+                .subject(user.getUsername())
+                .issuedAt(new Date())
+                .expiration(new Date(System.currentTimeMillis() + expirationTime))
+                .signWith(secretKey)
+                .compact();
+    }
+
     private Claims getClaims(String token) {
         return Jwts.parser()
                 .verifyWith(secretKey)

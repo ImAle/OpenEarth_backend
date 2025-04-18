@@ -55,7 +55,7 @@ public class RentServiceImpl implements RentService {
         rent.setHouse(house);
 
         this.saveRent(rent);
-        emailService.rented_email(user.getEmail(), house.getTitle());
+        emailService.rentedEmail(user.getEmail(), house.getTitle());
 
         return rent;
     }
@@ -134,7 +134,7 @@ public class RentServiceImpl implements RentService {
         rent.setEndDate(LocalDateTime.now());
         this.saveRent(rent);
 
-        emailService.cancel_email(user.getEmail(), rent.getHouse().getTitle());
+        emailService.cancelEmail(user.getEmail(), rent.getHouse().getTitle());
     }
 
     @Override

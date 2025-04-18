@@ -90,7 +90,7 @@ public class AuthService {
         user.setToken(token);
         userService.saveUser(user);
 
-        emailService.wellcome_email(user.getEmail());
+        emailService.wellcomeEmail(user.getEmail());
 
         return List.of(token);
     }
@@ -136,6 +136,20 @@ public class AuthService {
             updatePicture(user, picture);
 
         return userService.saveUser(user);
+    }
+
+    public void updateUserPassword(User user, String newPassword){
+        user.setPassword(userService.passwordEncoder().encode(newPassword));
+        userService.saveUser(user);
+    }
+
+    public void setTokenforPasswordReset(User user){
+        long expiration = 30 * 60 * 1000; // 30 minutes
+        String token = jwtService.generateToken(user, expiration);
+        user.setToken(token);
+        userService.saveUser(user);
+
+        emailService.sendResetPasswordEmail(user.getEmail(), token);
     }
 
 }
