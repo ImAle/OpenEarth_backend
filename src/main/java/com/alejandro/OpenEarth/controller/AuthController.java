@@ -2,6 +2,7 @@ package com.alejandro.OpenEarth.controller;
 
 import com.alejandro.OpenEarth.dto.UserCreationDto;
 import com.alejandro.OpenEarth.entity.User;
+import com.alejandro.OpenEarth.exception.UserNotEnabledException;
 import com.alejandro.OpenEarth.serviceImpl.AuthService;
 import com.alejandro.OpenEarth.serviceImpl.JwtService;
 import com.alejandro.OpenEarth.serviceImpl.UserService;
@@ -37,6 +38,8 @@ public class AuthController {
         try{
             String token = authService.login(email, password);
             return ResponseEntity.ok().body(Map.of("token", token, "id", jwtService.getUser(token).getId()));
+        }catch(UserNotEnabledException unex){
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body(Map.of("Error", unex.getMessage()));
         }catch (AuthenticationException aex){
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(Map.of("Error", "Invalid credentials"));
         }catch (Exception ex){

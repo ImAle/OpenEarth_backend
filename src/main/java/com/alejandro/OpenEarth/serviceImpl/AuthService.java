@@ -3,6 +3,7 @@ package com.alejandro.OpenEarth.serviceImpl;
 import com.alejandro.OpenEarth.dto.UserCreationDto;
 import com.alejandro.OpenEarth.dto.UserUpdateDto;
 import com.alejandro.OpenEarth.entity.User;
+import com.alejandro.OpenEarth.exception.UserNotEnabledException;
 import com.alejandro.OpenEarth.service.EmailService;
 import com.alejandro.OpenEarth.service.PictureService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -42,11 +43,16 @@ public class AuthService {
     private EmailService emailService;
 
     public String login(String email, String password) {
+        User user = userService.getUserByEmail(email);
+
+        if(!user.isEnabled())
+            throw new UserNotEnabledException("User is not enabled");
+
+        // Check if credentials are all right, otherwise throws error
         Authentication authentication = authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(email, password)
         );
 
-        User user = (User) authentication.getPrincipal();
         String token = jwtService.generateToken(user);
         user.setToken(token);
         userService.saveUser(user);
