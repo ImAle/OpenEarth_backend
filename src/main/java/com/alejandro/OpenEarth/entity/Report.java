@@ -25,4 +25,5 @@ public class Report {
     private User reported;
 
     private LocalDateTime createdAt;
+    private boolean deleted;
 }

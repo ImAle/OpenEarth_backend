@@ -31,7 +31,7 @@ public class ReportServiceImpl implements ReportService {
 
     @Override
     public List<Report> getReports() {
-        return reportRepository.findAll();
+        return reportRepository.findByDeleted(false);
     }
 
     @Override
@@ -46,7 +46,8 @@ public class ReportServiceImpl implements ReportService {
     public void deleteReportById(Long id) {
         try{
             Report report = this.getReportById(id);
-            reportRepository.delete(report);
+            report.setDeleted(true);
+            reportRepository.save(report);
         }catch (RuntimeException e){
             throw new RuntimeException(e.getMessage());
         }
@@ -61,6 +62,7 @@ public class ReportServiceImpl implements ReportService {
         report.setReporter(reporter);
         report.setReported(reported);
         report.setCreatedAt(LocalDateTime.now());
+        report.setDeleted(false);
 
         return createReport(report);
     }
