@@ -45,11 +45,20 @@ public class JwtAuthFilter extends OncePerRequestFilter {
 
     // If happens any error, this function is triggered to send token related errors.
     private void sendErrorResponse(HttpServletResponse response, HttpStatus status, String message) throws IOException {
-        response.setStatus(status.value());
-        response.setContentType(MediaType.APPLICATION_JSON_VALUE);
-        String jsonResponse = String.format("{ \"error\": \"%s\", \"message\": \"%s\" }", status.getReasonPhrase(), message);
-        response.getWriter().write(jsonResponse);
-        response.getWriter().flush();
+        if (!response.isCommitted()) {
+            response.resetBuffer();
+            response.setStatus(status.value());
+            response.setContentType(MediaType.APPLICATION_JSON_VALUE);
+            response.setCharacterEncoding("UTF-8");
+
+            String jsonResponse = String.format("{\"error\":\"%s\",\"message\":\"%s\"}",
+                    status.getReasonPhrase(),
+                    message.replace("\"", "\\\""));
+
+            response.getOutputStream().write(jsonResponse.getBytes("UTF-8"));
+            response.getOutputStream().flush();
+            response.flushBuffer();
+        }
     }
 
     @Override
@@ -68,26 +77,38 @@ public class JwtAuthFilter extends OncePerRequestFilter {
             final String authHeader = request.getHeader("Authorization");
 
             if (authHeader == null) {
-                throw new ServletException("No token on authorization header");
+                sendErrorResponse(response, HttpStatus.BAD_REQUEST, "No token on authorization header");
+                return;
             }
 
             if (!authHeader.startsWith("Bearer ")) {
-                throw new ServletException("Invalid token format");
+                sendErrorResponse(response, HttpStatus.BAD_REQUEST, "Invalid token format");
+                return;
             }
 
             String jwt = authHeader.substring(7);
 
             if (jwt.isBlank()) {
-                throw new MalformedJwtException("Empty token");
+                sendErrorResponse(response, HttpStatus.UNAUTHORIZED, "Empty token");
+                return;
             }
 
-            String userEmail = jwtService.extractUsername(jwt);
+            String userEmail;
+            try {
+                userEmail = jwtService.extractUsername(jwt);
+            } catch (ExpiredJwtException eje) {
+                sendErrorResponse(response, HttpStatus.UNAUTHORIZED, "JWT token is expired: " + eje.getMessage());
+                return;
+            } catch (MalformedJwtException | SignatureException mjese) {
+                sendErrorResponse(response, HttpStatus.UNAUTHORIZED, "JWT token is invalid: " + mjese.getMessage());
+                return;
+            }
 
             if (userEmail != null && SecurityContextHolder.getContext().getAuthentication() == null) {
                 UserDetails userDetails = userDetailsService.loadUserByUsername(userEmail);
 
                 if (jwtService.isTokenValid(jwt, userDetails)) {
-                    UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(userDetails,null,userDetails.getAuthorities());
+                    UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
                     authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
                     SecurityContextHolder.getContext().setAuthentication(authToken);
                 }
@@ -95,21 +116,8 @@ public class JwtAuthFilter extends OncePerRequestFilter {
 
             filterChain.doFilter(request, response);
 
-        } catch (ExpiredJwtException eje) {
-            sendErrorResponse(response,
-                    HttpStatus.UNAUTHORIZED,
-                    "JWT token is expired: " + eje.getMessage()
-            );
-        }catch (MalformedJwtException | SignatureException mjese) {
-            sendErrorResponse(response,
-                    HttpStatus.UNAUTHORIZED,
-                    "JWT token is invalid: " + mjese.getMessage()
-            );
-        } catch (ServletException se) {
-            sendErrorResponse(response,
-                    HttpStatus.BAD_REQUEST,
-                    "Authentication Error: " + se.getMessage()
-            );
+        } catch (Exception e) {
+            sendErrorResponse(response, HttpStatus.INTERNAL_SERVER_ERROR, "Authentication error: " + e.getMessage());
         }
     }
 

@@ -1,12 +1,15 @@
 package com.alejandro.OpenEarth.serviceImpl;
 
 import com.alejandro.OpenEarth.entity.Report;
+import com.alejandro.OpenEarth.entity.User;
 import com.alejandro.OpenEarth.repository.ReportRepository;
+import com.alejandro.OpenEarth.repository.UserRepository;
 import com.alejandro.OpenEarth.service.ReportService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -17,9 +20,13 @@ public class ReportServiceImpl implements ReportService {
     @Qualifier("reportRepository")
     private ReportRepository reportRepository;
 
+    @Autowired
+    @Qualifier("userService")
+    private UserService userService;
+
     @Override
     public Report createReport(Report report) {
-        return null;
+        return reportRepository.save(report);
     }
 
     @Override
@@ -43,5 +50,18 @@ public class ReportServiceImpl implements ReportService {
         }catch (RuntimeException e){
             throw new RuntimeException(e.getMessage());
         }
+    }
+
+    @Override
+    public Report fromDtoToEntity(long reportedId, User reporter, String comment) {
+        Report report = new Report();
+        User reported = userService.getUserById(reportedId);
+
+        report.setComment(comment);
+        report.setReporter(reporter);
+        report.setReported(reported);
+        report.setCreatedAt(LocalDateTime.now());
+
+        return createReport(report);
     }
 }

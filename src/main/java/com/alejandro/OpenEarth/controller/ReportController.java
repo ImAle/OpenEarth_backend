@@ -3,6 +3,7 @@ package com.alejandro.OpenEarth.controller;
 import com.alejandro.OpenEarth.dto.ReportCreationDto;
 import com.alejandro.OpenEarth.dto.ReportDto;
 import com.alejandro.OpenEarth.entity.Report;
+import com.alejandro.OpenEarth.entity.User;
 import com.alejandro.OpenEarth.service.ReportService;
 import com.alejandro.OpenEarth.serviceImpl.AuthService;
 import com.alejandro.OpenEarth.serviceImpl.JwtService;
@@ -33,15 +34,17 @@ public class ReportController {
     @PostMapping("/create")
     public ResponseEntity<?> createReport(@RequestHeader("Authorization") String token, @Valid @RequestBody ReportCreationDto report, BindingResult result) {
         try{
-            if(!Objects.equals(jwtService.getUser(token).getId(), report.getReporterId()))
-                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("You can not report on behalf of someone else");
+            User user = jwtService.getUser(token);
+
+            if(!jwtService.isGuest(token) && !jwtService.isHostess(token))
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("You can not report if you are not guest or hostess");
 
             if(result.hasErrors())
                 return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(result.getAllErrors());
 
-            Report rep = report.fromDtoToEntity();
+            Report rep = reportService.fromDtoToEntity(report.getReportedId(), user, report.getComment());
             reportService.createReport(rep);
-            String message = rep.getReported().getUsername() + "has been successfully reported";
+            String message = rep.getReported().getUsername() + " has been successfully reported";
 
             return ResponseEntity.status(HttpStatus.CREATED).body(Map.of("message", message));
         }catch (RuntimeException rtex){

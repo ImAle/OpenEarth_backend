@@ -38,24 +38,20 @@ public class SecurityConfig {
                         .requestMatchers(
                                 "/api/picture/**",
                                 "/api/auth/**",
+                                "/api/geo/**",
+                                "/api/user/details",
                                 "/api/house",
                                 "/api/house/categories",
                                 "/api/house/details",
-                                "/api/user/details",
                                 "/api/house/countries",
                                 "/api/house/status",
-                                "/api/house/nearTo",
-                                "/api/auth/forgot-password",
-                                "/api/auth/validateToken",
-                                "/api/auth/resetPassword",
-                                "/api/geo/**"
+                                "/api/house/nearTo"
                                 ).permitAll()
 
                         .requestMatchers(
                                 "/api/rent/myRents",
                                 "/api/rent/cancel",
                                 "/api/rent/create",
-                                "/api/report/create",
                                 "/api/review/create"
                         ).hasRole("GUEST")
 
@@ -64,12 +60,12 @@ public class SecurityConfig {
                                 "/api/house/update",
                                 "/api/house/create",
                                 "/api/rent/house",
-                                "/api/rent/houses",
-                                "/api/report/create"
+                                "/api/rent/houses"
                         ).hasRole("HOSTESS")
 
                         .requestMatchers(
-                                "/api/user/update"
+                                "/api/user/update",
+                                "/api/report/create"
                         ).hasAnyRole("GUEST", "HOSTESS")
 
                         .requestMatchers(
