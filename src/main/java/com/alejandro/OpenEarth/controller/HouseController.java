@@ -4,8 +4,10 @@ import com.alejandro.OpenEarth.dto.*;
 import com.alejandro.OpenEarth.entity.House;
 import com.alejandro.OpenEarth.entity.HouseCategory;
 import com.alejandro.OpenEarth.entity.HouseStatus;
+import com.alejandro.OpenEarth.entity.User;
 import com.alejandro.OpenEarth.service.HouseService;
 import com.alejandro.OpenEarth.serviceImpl.CurrencyServiceImpl;
+import com.alejandro.OpenEarth.serviceImpl.UserService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -18,6 +20,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 @RestController
 @RequestMapping("/api/house")
@@ -75,16 +78,43 @@ public class HouseController {
     }
 
     @GetMapping("/nearTo")
-    public ResponseEntity<?> getHousesNearTo(@RequestParam("id") Long id, @RequestParam("km") double km){
+    public ResponseEntity<?> getHousesNearTo(@RequestParam("id") Long id, @RequestParam("km") double km, @RequestParam(value = "currency", required = false) String currency){
         try{
             House house = houseService.getHouseById(id);
-            List<HousePreviewDto> houses = houseService.getHousesNearTo(house, km);
+
+            if(currency == null)
+                currency = "EUR";
+
+            List<HousePreviewDto> houses = houseService.getHousesNearTo(house, km, currency);
 
             if(houses.isEmpty())
                 return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
 
             return ResponseEntity.ok().body(Map.of("houses", houses));
         }catch(RuntimeException rtex){
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(Map.of("error", rtex.getMessage()));
+        }catch (Exception e){
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(Map.of("error", e.getMessage()));
+        }
+    }
+
+    @GetMapping("/owner")
+    public ResponseEntity<?> getHousesByOwner(@RequestParam("owner") long id, @RequestParam(value = "currency", required = false) String currency){
+        try{
+            List<House> houses = houseService.getHousesByOwnerId(id);
+
+            if(houses.isEmpty()) {
+                return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+            }
+
+            if(currency == null || currency.isEmpty())
+                currency = "EUR";
+
+            String finalCurrency = currency;
+            List<HousePreviewDto> preview = houses.stream().map(house -> new HousePreviewDto(house, finalCurrency)).toList();
+
+            return ResponseEntity.ok().body(Map.of("houses", preview));
+        }catch (RuntimeException rtex){
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(Map.of("error", rtex.getMessage()));
         }catch (Exception e){
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(Map.of("error", e.getMessage()));

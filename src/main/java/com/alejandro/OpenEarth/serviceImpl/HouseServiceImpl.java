@@ -56,7 +56,6 @@ public class HouseServiceImpl implements HouseService {
         Long owner = jwtService.getUserId(token);
         User user = userService.getUserFullDetailById(owner);
         House house = new House();
-
         house.setTitle(houseDto.getTitle());
         house.setDescription(houseDto.getDescription());
         house.setGuests(houseDto.getGuests());
@@ -73,15 +72,11 @@ public class HouseServiceImpl implements HouseService {
         house.setRents(null);
         house.setReviews(null);
         house.setOwner(user);
-
         double price = houseDto.getPrice();
         house.setPrice(price);
-
         String currency = houseDto.getCurrency();
-
         if (!Objects.equals(currency, "EUR"))
             house.setPrice(currencyService.getPriceInEUR(currency, price));
-
         houseRepository.save(house);
 
         List<Picture> pictures = new ArrayList<>();
@@ -124,14 +119,14 @@ public class HouseServiceImpl implements HouseService {
     }
 
     @Override
-    public List<HousePreviewDto> getHousesNearTo(House house, double km){
+    public List<HousePreviewDto> getHousesNearTo(House house, double km, String currency){
         GeoUtils.BoundingBox box = GeoUtils.getBoundingBox(house.getLatitude(), house.getLongitude(), km);
         List<House> houses = houseRepository.findInArea(
                 box.minLat(), box.maxLat(), box.minLng(), box.maxLng());
 
         houses.removeIf(h -> h.getId().equals(house.getId()));
 
-        return houses.stream().map(h -> new HousePreviewDto(h, "EUR")).toList();
+        return houses.stream().map(h -> new HousePreviewDto(h, currency)).toList();
     }
 
     @Override
@@ -140,7 +135,6 @@ public class HouseServiceImpl implements HouseService {
 
         if(location != null && !location.isEmpty()) {
             Object geoJson = geolocationService.getPolygonsFromLocation(location);
-            System.out.println(geoJson);
             houses = geoPolygonService.filterHousesInPolygon(geoJson, houses);
         }
 
@@ -158,8 +152,8 @@ public class HouseServiceImpl implements HouseService {
     }
 
     @Override
-    public List<Long> getIdHousesByOwnerId(Long ownerId) {
-        return houseRepository.findHousesIdByOwnerId(ownerId);
+    public List<House> getHousesByOwnerId(Long ownerId) {
+        return houseRepository.findHousesByOwnerId(ownerId);
     }
 
     @Override

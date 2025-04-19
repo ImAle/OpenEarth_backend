@@ -40,7 +40,8 @@ public class JwtAuthFilter extends OncePerRequestFilter {
             "/api/house",
             "/api/house/status",
             "/api/house/countries",
-            "/api/house/nearTo"
+            "/api/house/nearTo",
+            "/api/house/owner"
     );
 
     // If happens any error, this function is triggered to send token related errors.
@@ -77,7 +78,7 @@ public class JwtAuthFilter extends OncePerRequestFilter {
             final String authHeader = request.getHeader("Authorization");
 
             if (authHeader == null) {
-                sendErrorResponse(response, HttpStatus.BAD_REQUEST, "No token on authorization header");
+                sendErrorResponse(response, HttpStatus.FORBIDDEN, "No token on authorization header");
                 return;
             }
 

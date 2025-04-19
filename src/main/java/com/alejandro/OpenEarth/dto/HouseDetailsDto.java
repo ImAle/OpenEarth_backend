@@ -56,7 +56,7 @@ public class HouseDetailsDto {
             price = currencyService.getPriceInSelectedCurrency(this.currency, house.getPrice());
         }
 
-        this.price = price;
+        this.price = Math.round(price);
 
         List<ReviewDto> reviews = house.getReviews().stream().map(ReviewDto::new).toList();
         this.setReviews(reviews);

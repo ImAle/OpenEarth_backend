@@ -45,7 +45,8 @@ public class SecurityConfig {
                                 "/api/house/details",
                                 "/api/house/countries",
                                 "/api/house/status",
-                                "/api/house/nearTo"
+                                "/api/house/nearTo",
+                                "/api/house/owner"
                                 ).permitAll()
 
                         .requestMatchers(

@@ -16,10 +16,10 @@ public interface HouseService {
     House getHouseById(Long id);
     Set<House> getHouses();
     List<House> getAllAvailableHouses(String currency);
-    List<HousePreviewDto> getHousesNearTo(House house, double km);
+    List<HousePreviewDto> getHousesNearTo(House house, double km, String currency);
     List<HousePreviewDto> getFilteredHouses(String location, Double minPrice, Double maxPrice, Integer beds, Integer guests, HouseCategory category, String currency);
     HouseStatus[] getHouseStatuses();
-    List<Long> getIdHousesByOwnerId(Long ownerId);
+    List<House> getHousesByOwnerId(Long ownerId);
     Set<House> getHousesofLoggedUser(String token);
     boolean isMyHouse(String token, Long houseId);
     HouseCategory[] getHouseCategories();

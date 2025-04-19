@@ -49,4 +49,20 @@ public class ReviewController {
         }
     }
 
+    @GetMapping("/house")
+    public ResponseEntity<?> getReviewOfHouse(@RequestParam("id") long houseId) {
+        try{
+            List<Review> reviews = reviewService.getReviewFromHouseId(houseId);
+
+            if(reviews.isEmpty())
+                return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+
+            return ResponseEntity.status(HttpStatus.OK).body(Map.of("reviews", reviews));
+        }catch (RuntimeException rtex){
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(Map.of("error", rtex.getMessage()));
+        }catch (Exception e){
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
+        }
+    }
+
 }

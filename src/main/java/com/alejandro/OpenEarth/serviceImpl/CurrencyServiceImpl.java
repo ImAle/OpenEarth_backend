@@ -16,13 +16,13 @@ public class CurrencyServiceImpl implements CurrencyService {
     }
 
     @Override
-    public double getPriceInEUR(String currency, double price) {
+    public double getPriceInEUR(String currency, Double price) {
         String url = "https://api.exchangerate-api.com/v4/latest/" + currency;
         Map<String, Object> response = restTemplate.getForObject(url, Map.class);
         Map<String, Double> rates = (Map<String, Double>) response.get("rates");
 
-        if (rates != null && rates.containsKey(currency)) {
-            double rate = rates.get(currency);
+        if (rates != null && rates.containsKey("EUR")) {
+            Double rate = Double.parseDouble(String.valueOf(rates.get("EUR")));
             return price * rate;
         }
 

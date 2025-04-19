@@ -43,6 +43,6 @@ public class HousePreviewDto {
             price = currencyService.getPriceInSelectedCurrency(this.currency, house.getPrice());
         }
 
-        this.price = price;
+        this.price = Math.round(price);
     }
 }
