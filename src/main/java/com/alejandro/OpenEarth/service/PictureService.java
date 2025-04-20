@@ -13,4 +13,5 @@ public interface PictureService {
     void delete(Picture picture);
     void updateUserPicture(MultipartFile dtoPicture, User user);
     void updateHousePicture(MultipartFile dtoPicture, House house);
+    boolean isThatMyPicture(Picture picture, User user);
 }

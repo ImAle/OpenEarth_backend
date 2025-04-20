@@ -157,8 +157,8 @@ public class HouseController {
         }
     }
 
-    @PutMapping("/update")
-    public ResponseEntity<?> updateHouse(@RequestHeader("Authorization") String token, @Valid @RequestBody HouseUpdateDto houseDto, BindingResult result, @RequestParam("id") Long id, @RequestParam("pictures") List<MultipartFile> newPictures) {
+    @PutMapping(path = "/update", consumes = {MediaType.MULTIPART_FORM_DATA_VALUE})
+    public ResponseEntity<?> updateHouse(@RequestHeader("Authorization") String token, @Valid @RequestPart("house") HouseUpdateDto houseDto, BindingResult result, @RequestParam("id") Long id, @RequestPart(value = "pictures", required = false) MultipartFile[] newPictures) {
         try{
             if(result.hasErrors())
                 return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(result.getAllErrors());
@@ -168,7 +168,7 @@ public class HouseController {
 
             House house = houseService.updateHouse(houseDto, id, newPictures);
 
-            return ResponseEntity.ok().body(Map.of("house", house));
+            return ResponseEntity.ok().body(Map.of("message", "This house has been updated successfully"));
         }catch (RuntimeException rtex){
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(Map.of("error", rtex.getMessage()));
         }catch (Exception e){

@@ -170,7 +170,7 @@ public class HouseServiceImpl implements HouseService {
     }
 
     @Override
-    public House updateHouse(HouseUpdateDto houseDto, Long id, List<MultipartFile> pictures) {
+    public House updateHouse(HouseUpdateDto houseDto, Long id, MultipartFile[] pictures) {
         House house = this.getHouseById(id);
 
         house.setTitle(houseDto.getTitle());
@@ -190,7 +190,7 @@ public class HouseServiceImpl implements HouseService {
         if (!Objects.equals(currency, "EUR"))
             house.setPrice(currencyService.getPriceInEUR(currency, price));
 
-        if(pictures!=null && !pictures.isEmpty()) {
+        if(pictures!=null) {
             for(MultipartFile picture : pictures) {
                 pictureService.updateHousePicture(picture, house);
             }
@@ -211,5 +211,20 @@ public class HouseServiceImpl implements HouseService {
             pictureService.delete(picture);
 
         houseRepository.deleteById(id);
+    }
+
+    @Override
+    public boolean isThatMyPictureHouse(Picture picture, User user){
+        boolean result = false;
+        List<House> houses = getHousesByOwnerId(user.getId());
+
+        for(House house : houses){
+            if (house.getPictures().contains(picture)) {
+                result = true;
+                break;
+            }
+        }
+
+        return result;
     }
 }

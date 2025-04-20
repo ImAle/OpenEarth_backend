@@ -3,9 +3,7 @@ package com.alejandro.OpenEarth.service;
 import com.alejandro.OpenEarth.dto.HouseCreationDto;
 import com.alejandro.OpenEarth.dto.HousePreviewDto;
 import com.alejandro.OpenEarth.dto.HouseUpdateDto;
-import com.alejandro.OpenEarth.entity.House;
-import com.alejandro.OpenEarth.entity.HouseCategory;
-import com.alejandro.OpenEarth.entity.HouseStatus;
+import com.alejandro.OpenEarth.entity.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
@@ -23,6 +21,7 @@ public interface HouseService {
     Set<House> getHousesofLoggedUser(String token);
     boolean isMyHouse(String token, Long houseId);
     HouseCategory[] getHouseCategories();
-    House updateHouse(HouseUpdateDto houseDto, Long id, List<MultipartFile> newPictures);
+    House updateHouse(HouseUpdateDto houseDto, Long id, MultipartFile[] newPictures);
     void deleteHouseById(Long id);
+    boolean isThatMyPictureHouse(Picture picture, User user);
 }
