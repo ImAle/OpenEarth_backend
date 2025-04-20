@@ -132,7 +132,6 @@ public class AuthService {
         Map<String, String> errors = new HashMap<>();
 
         updatePassword(user, userDto.getPassword(), userDto.getPasswordConfirmation(), errors);
-        updateUsername(user, userDto.getUsername(), errors);
 
         if (!errors.isEmpty()) {
             throw new RuntimeException(errors.toString());

@@ -1,7 +1,5 @@
 package com.alejandro.OpenEarth.serviceImpl;
 
-import com.alejandro.OpenEarth.dto.HousePreviewDto;
-import com.alejandro.OpenEarth.entity.House;
 import com.alejandro.OpenEarth.entity.UserRole;
 import com.alejandro.OpenEarth.repository.UserRepository;
 import com.alejandro.OpenEarth.entity.User;
@@ -15,6 +13,7 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 import java.util.Optional;
@@ -79,6 +78,11 @@ public class UserService implements UserDetailsService {
             throw new UsernameNotFoundException("User not found");
 
         return user.get();
+    }
+
+    public void updateUserPhoto(User user, MultipartFile picture){
+        pictureService.updateUserPicture(picture, user);
+        saveUser(user);
     }
 
     public void deleteUserById(Long id){

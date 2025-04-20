@@ -166,7 +166,7 @@ public class HouseController {
             if(!houseService.isMyHouse(token, id))
                 return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(Map.of("error", "You can not edit this house"));
 
-            House house = houseService.updateHouse(houseDto, id, newPictures);
+            houseService.updateHouse(houseDto, id, newPictures);
 
             return ResponseEntity.ok().body(Map.of("message", "This house has been updated successfully"));
         }catch (RuntimeException rtex){

@@ -49,7 +49,6 @@ public class PictureServiceImpl implements PictureService {
 
     @Override
     public Picture createUserPicture(String filename, User user) {
-        delete(user.getPicture());
         return new Picture(pictureConfiguration.getUrlPrefix() + filename, user);
     }
 
@@ -77,9 +76,24 @@ public class PictureServiceImpl implements PictureService {
         }
     }
 
+    public void deleteUserPicture(User user){
+        Picture picture = user.getPicture();
+        if(picture != null){
+            String filename = picture.getUrl().substring(pictureConfiguration.getUrlPrefix().length());
+            try {
+                user.setPicture(null);
+                storageService.delete(filename);
+                pictureRepository.delete(picture);
+            }catch (IOException e){
+                System.err.println("Error deleting user picture: " + e.getMessage());
+            }
+        }
+    }
+
     @Override
     public void updateUserPicture(MultipartFile dtoPicture, User user){
         String filename = storageService.store(dtoPicture, user.getId());
+        deleteUserPicture(user);
         Picture picture = this.createUserPicture(filename, user);
         this.save(picture);
         user.setPicture(picture);
@@ -87,7 +101,7 @@ public class PictureServiceImpl implements PictureService {
 
     @Override
     public void updateHousePicture(MultipartFile dtoPicture, House house) {
-        String filename = storageService.store(dtoPicture, Long.getLong(house.getOwner().getId() + "" + house.getId()));
+        String filename = storageService.store(dtoPicture, house.getId());
         Picture picture = this.createHousePicture(filename, house);
         this.save(picture);
         house.getPictures().add(picture);

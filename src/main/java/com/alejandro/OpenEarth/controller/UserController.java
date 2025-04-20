@@ -10,6 +10,7 @@ import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.validation.BindingResult;
@@ -95,17 +96,15 @@ public class UserController {
         }
     }
 
-    @PutMapping("/update")
-    public ResponseEntity<?> updateUser(@RequestHeader("Authorization") String token, @Valid @RequestBody UserUpdateDto user, BindingResult result, @RequestParam("id") Long id, @RequestParam(value = "picture", required = false) MultipartFile picture){
+    @PutMapping(path = "/picture", consumes = {MediaType.MULTIPART_FORM_DATA_VALUE})
+    public ResponseEntity<?> updateUser(@RequestHeader("Authorization") String token, @RequestPart(value = "picture") MultipartFile picture){
         try{
-            if(result.hasErrors())
-                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(result.getAllErrors());
+            User user = jwtService.getUser(token);
+            userService.updateUserPhoto(user, picture);
 
-            if (!jwtService.isThatMe(token, id))
-                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(Map.of("message", "You are not allowed to update someone else"));
-
-            authService.updateUser(user, id, picture);
-            return ResponseEntity.ok().body(Map.of("message", "The user has been updated successfully"));
+            return ResponseEntity.ok().body(Map.of("message", "Your picture has been updated successfully"));
+        }catch (RuntimeException rtex){
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Map.of("Error", rtex.getMessage()));
         }catch (Exception ex){
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(Map.of("Error", ex.getMessage()));
         }

@@ -100,6 +100,7 @@ public class AuthController {
         try{
             User user = jwtService.getUser(token);
             authService.updateUserPassword(user, newPassword);
+
             return ResponseEntity.ok().body(Map.of("message", "Your password has been reset"));
         }catch (RuntimeException rtex){
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(Map.of("error", rtex.getMessage()));

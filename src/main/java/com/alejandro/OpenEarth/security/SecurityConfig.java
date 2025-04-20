@@ -65,7 +65,7 @@ public class SecurityConfig {
                         ).hasRole("HOSTESS")
 
                         .requestMatchers(
-                                "/api/user/update",
+                                "/api/user/picture",
                                 "/api/report/create",
                                 "/api/pictures/delete"
                         ).hasAnyRole("GUEST", "HOSTESS")
