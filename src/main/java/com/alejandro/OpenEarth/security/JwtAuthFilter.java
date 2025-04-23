@@ -41,7 +41,11 @@ public class JwtAuthFilter extends OncePerRequestFilter {
             "/api/house/status",
             "/api/house/countries",
             "/api/house/nearTo",
-            "/api/house/owner"
+            "/api/house/owner",
+            "/api/chat/upload-attachment",
+            "/api/chat/audio/",
+            "/api/chat/chat.markRead",
+            "/api/chat/chat.sendMessage"
     );
 
     // If happens any error, this function is triggered to send token related errors.
@@ -67,13 +71,12 @@ public class JwtAuthFilter extends OncePerRequestFilter {
         String path = request.getRequestURI();
 
         // routes that should not been filtered by JwtService
-        return path.startsWith("/api/auth/") || path.startsWith("/api/geo/") || path.startsWith("/api/picture/") || ALLOWED_PATHS.contains(path);
+        return path.startsWith("/api/auth/") || path.startsWith("/api/geo/") || path.startsWith("/api/picture/") || path.startsWith("/ws/chat") || ALLOWED_PATHS.contains(path);
     }
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
             throws ServletException, IOException {
-
         try {
             final String authHeader = request.getHeader("Authorization");
 

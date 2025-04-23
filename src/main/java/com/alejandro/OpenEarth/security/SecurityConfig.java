@@ -4,7 +4,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -46,7 +45,13 @@ public class SecurityConfig {
                                 "/api/house/countries",
                                 "/api/house/status",
                                 "/api/house/nearTo",
-                                "/api/house/owner"
+                                "/api/house/owner",
+                                // Chat related endpoints
+                                "/ws/chat/**",
+                                "/ws/chat",
+                                "/ws/chat.sockjs/**",
+                                "/app/**",
+                                "/user/**"
                                 ).permitAll()
 
                         .requestMatchers(
@@ -67,7 +72,8 @@ public class SecurityConfig {
                         .requestMatchers(
                                 "/api/user/picture",
                                 "/api/report/create",
-                                "/api/pictures/delete"
+                                "/api/pictures/delete",
+                                "/api/chat/**"
                         ).hasAnyRole("GUEST", "HOSTESS")
 
                         .requestMatchers(
@@ -103,10 +109,10 @@ public class SecurityConfig {
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration config = new CorsConfiguration();
-        config.setAllowedOrigins(Arrays.asList("*"));
+        config.setAllowedOrigins(Arrays.asList("http://localhost:4200", "http://127.0.0.1:4200"));
         config.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS"));
         config.setAllowedHeaders(Arrays.asList("*"));
-        config.setAllowCredentials(false);
+        config.setAllowCredentials(true);
         config.setMaxAge(3600L); // 1 hour for preflight cache
 
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();

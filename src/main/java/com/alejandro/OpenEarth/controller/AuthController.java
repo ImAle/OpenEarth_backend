@@ -37,7 +37,15 @@ public class AuthController {
     public ResponseEntity<?> login(@RequestParam("email") String email, @RequestParam("password") String password){
         try{
             String token = authService.login(email, password);
-            return ResponseEntity.ok().body(Map.of("token", token, "id", jwtService.getUser(token).getId()));
+            User user = jwtService.getUser(token);
+
+            return ResponseEntity.ok().body(Map.of(
+                    "token", token,
+                    "id", user.getId(),
+                    "username", jwtService.extractUsername(token),
+                    "role", user.getRole()
+            ));
+
         }catch(UserNotEnabledException unex){
             return ResponseEntity.status(HttpStatus.FORBIDDEN).body(Map.of("Error", unex.getMessage()));
         }catch (AuthenticationException aex){
