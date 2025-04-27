@@ -11,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.*;
 
@@ -99,7 +100,7 @@ public class RentServiceImpl implements RentService {
 
     @Override
     public boolean isRentActive(Rent rent) {
-        LocalDateTime now = LocalDateTime.now();
+        LocalDate now = LocalDate.now();
         return now.isAfter(rent.getStartDate()) && now.isBefore(rent.getEndDate());
     }
 
@@ -144,7 +145,7 @@ public class RentServiceImpl implements RentService {
             throw new IllegalAccessException("You are not authorize to cancel someone else rent");
 
         User user = jwtService.getUser(token);
-        rent.setEndDate(LocalDateTime.now());
+        rent.setEndDate(LocalDate.now());
         this.saveRent(rent);
 
         emailService.cancelEmail(user.getEmail(), rent.getHouse().getTitle());
