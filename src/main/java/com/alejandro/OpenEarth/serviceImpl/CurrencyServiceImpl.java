@@ -9,11 +9,7 @@ import java.util.Map;
 @Service("currencyService")
 public class CurrencyServiceImpl implements CurrencyService {
 
-    private final RestTemplate restTemplate;
-
-    public CurrencyServiceImpl() {
-        this.restTemplate = new RestTemplate();
-    }
+    private RestTemplate restTemplate = new RestTemplate();
 
     @Override
     public double getPriceInEUR(String currency, Double price) {

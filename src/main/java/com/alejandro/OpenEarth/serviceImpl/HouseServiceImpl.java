@@ -52,6 +52,12 @@ public class HouseServiceImpl implements HouseService {
     private JwtService jwtService;
 
     @Override
+    public House save(House house){
+        return houseRepository.save(house);
+    }
+
+
+    @Override
     public House create(String token, HouseCreationDto houseDto, MultipartFile[] images) {
         Long owner = jwtService.getUserId(token);
         User user = userService.getUserFullDetailById(owner);
@@ -102,6 +108,7 @@ public class HouseServiceImpl implements HouseService {
     @Override
     public House getHouseById(Long id) {
         Optional<House> house = houseRepository.findById(id);
+
         if (house.isEmpty())
             throw new RuntimeException("House not found.");
 

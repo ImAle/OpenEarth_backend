@@ -16,8 +16,7 @@ import java.util.Map;
 @Service("geolocationService")
 public class GeolocationServiceImpl implements GeolocationService {
 
-    @Autowired
-    private RestTemplate restTemplate ;
+    private final RestTemplate restTemplate = new RestTemplate();
 
     public Object getSearchResponse(String location){
         String query = location.strip().replace(" ", "_");

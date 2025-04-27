@@ -35,34 +35,17 @@ public class RentController {
     @Qualifier("jwtService")
     private JwtService jwtService;
 
-    @PostMapping("/create")
-    public ResponseEntity<?> createRent(@RequestHeader("Authorization") String token, @Valid @RequestBody RentCreationDto rent, BindingResult result) {
-        try{
-            if(result.hasErrors())
-                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(result.getAllErrors());
-
-            if(!jwtService.isGuest(token))
-                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("You are not allowed to perform this operation");
-
-            Rent r = rentService.createRent(token, rent);
-            return ResponseEntity.status(HttpStatus.CREATED).body(Map.of("rent", r));
-        }catch (RuntimeException rtex){
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(rtex.getMessage());
-        }catch (Exception e){
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
-        }
-
-    }
-
     @GetMapping("/myRents")
     public ResponseEntity<?> getMyRents(@RequestHeader("Authorization") String token) {
         try{
-            List<Rent> myRents = rentService.getActiveRentsLoggedUser(token);
+            List<Rent> myRents = rentService.getRentsLoggedUser(token);
 
             if (myRents.isEmpty())
                 return ResponseEntity.noContent().build();
 
-            return ResponseEntity.ok().body(Map.of("rents", myRents));
+            List<RentDto> dtos = rentService.getRentsToShow(myRents);
+
+            return ResponseEntity.ok().body(Map.of("rents", dtos));
         }catch (RuntimeException rtex){
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(rtex.getMessage());
         }catch (Exception e){
@@ -72,19 +55,21 @@ public class RentController {
     }
 
     @GetMapping("/house")
-    public ResponseEntity<?> getRentOfMyHouse(@RequestHeader("Authorization") String token, @RequestParam("id") Long houseId) {
+    public ResponseEntity<?> getRentOfMyHouse(@RequestParam("id") Long houseId) {
         try{
-            Set<Rent> rents = houseService.getHouseById(houseId).getRents();
+            List<Rent> rents = rentService.getRentsOfHouse(houseId);
 
             if(rents.isEmpty())
                 return ResponseEntity.noContent().build();
-            if(!houseService.isMyHouse(token, houseId))
-                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("You are not allowed to see someone else rents");
 
-            return ResponseEntity.ok().body(rents);
+            List<RentDto> dtos = rentService.getRentsToShow(rents);
+
+            return ResponseEntity.ok().body(Map.of("rents", dtos));
         }catch (RuntimeException rtex){
+            rtex.printStackTrace();
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(rtex.getMessage());
         }catch (Exception e){
+            e.printStackTrace();
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
 
@@ -94,12 +79,14 @@ public class RentController {
     public ResponseEntity<?> getRentsOfMyHouses(@RequestHeader("Authorization") String token){
         try{
             Set<House> houses = houseService.getHousesofLoggedUser(token);
-            Map<Long, List<RentDto>> rents = rentService.getRentOfMyHouses(houses);
+            List<Rent> rents = rentService.getRentOfMyHouses(houses);
 
             if(rents.isEmpty())
                 return ResponseEntity.noContent().build();
 
-            return ResponseEntity.ok().body(Map.of("rents", rents));
+            List<RentDto> dtos = rentService.getRentsToShow(rents);
+
+            return ResponseEntity.ok().body(Map.of("rents", dtos));
         }catch (RuntimeException rtex){
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(rtex.getMessage());
         }catch (Exception e){

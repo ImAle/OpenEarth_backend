@@ -2,10 +2,7 @@ package com.alejandro.OpenEarth.serviceImpl;
 
 import com.alejandro.OpenEarth.dto.RentCreationDto;
 import com.alejandro.OpenEarth.dto.RentDto;
-import com.alejandro.OpenEarth.entity.House;
-import com.alejandro.OpenEarth.entity.HouseStatus;
-import com.alejandro.OpenEarth.entity.Rent;
-import com.alejandro.OpenEarth.entity.User;
+import com.alejandro.OpenEarth.entity.*;
 import com.alejandro.OpenEarth.repository.RentRepository;
 import com.alejandro.OpenEarth.service.EmailService;
 import com.alejandro.OpenEarth.service.HouseService;
@@ -42,19 +39,19 @@ public class RentServiceImpl implements RentService {
     }
 
     @Override
-    public Rent createRent(String token, RentCreationDto dto){
+    public Rent createRent(User user, RentCreationDto dto, Payment payment){
         Rent rent = new Rent();
-        User user = jwtService.getUser(token);
 
         House house = houseService.getHouseById(dto.getHouseId());
-        house.setStatus(HouseStatus.RENTED);
 
         rent.setStartDate(dto.getStartTime());
         rent.setEndDate(dto.getEndTime());
         rent.setUser(user);
         rent.setHouse(house);
+        rent.setPayment(payment);
 
         this.saveRent(rent);
+        this.houseService.save(house);
         emailService.rentedEmail(user.getEmail(), house.getTitle());
 
         return rent;
@@ -86,6 +83,11 @@ public class RentServiceImpl implements RentService {
     }
 
     @Override
+    public List<RentDto> getRentsToShow(Collection<Rent> rents) {
+        return rents.stream().map(RentDto::new).toList();
+    }
+
+    @Override
     public Rent updateRent(Rent rent) {
         return rentRepository.save(rent);
     }
@@ -102,25 +104,36 @@ public class RentServiceImpl implements RentService {
     }
 
     @Override
-    public List<Rent> getActiveRentsByUser(long userId) {
+    public Set<Rent> getActiveRentsByUser(long userId) {
         return rentRepository.findActiveRentsByUser(userId, LocalDateTime.now());
     }
 
     @Override
-    public List<Rent> getActiveRentsLoggedUser(String token) {
+    public Set<Rent> getActiveRentsLoggedUser(String token) {
         User user = jwtService.getUser(token);
         return rentRepository.findActiveRentsByUser(user.getId(), LocalDateTime.now());
     }
 
     @Override
-    public Map<Long, List<RentDto>> getRentOfMyHouses(Set<House> houses){
-        Map<Long, List<RentDto>> rents = new HashMap<>();
+    public List<Rent> getRentsLoggedUser(String token) {
+        User user = jwtService.getUser(token);
+        return rentRepository.findRentsByUser(user);
+    }
+
+    @Override
+    public List<Rent> getRentOfMyHouses(Set<House> houses){
+        List<Rent> rent = new ArrayList<>();
 
         for (House house : houses) {
-            rents.put(house.getId(), house.getRents().stream().map(RentDto::new).toList());
+            rent.addAll(rentRepository.findRentsByHouse_Id(house.getId()));
         }
 
-        return rents;
+        return rent;
+    }
+
+    @Override
+    public List<Rent> getRentsOfHouse(long houseId){
+        return rentRepository.findRentsByHouse_Id(houseId);
     }
 
     @Override

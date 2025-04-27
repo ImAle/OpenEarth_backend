@@ -46,18 +46,18 @@ public class SecurityConfig {
                                 "/api/house/status",
                                 "/api/house/nearTo",
                                 "/api/house/owner",
+                                "/api/rent/house",
                                 // Chat related endpoints
                                 "/ws/chat/**",
                                 "/ws/chat",
                                 "/ws/chat.sockjs/**",
                                 "/app/**",
                                 "/user/**"
-                                ).permitAll()
+                        ).permitAll()
 
                         .requestMatchers(
                                 "/api/rent/myRents",
                                 "/api/rent/cancel",
-                                "/api/rent/create",
                                 "/api/review/create"
                         ).hasRole("GUEST")
 
@@ -65,7 +65,6 @@ public class SecurityConfig {
                                 "/api/house/delete",
                                 "/api/house/update",
                                 "/api/house/create",
-                                "/api/rent/house",
                                 "/api/rent/houses"
                         ).hasRole("HOSTESS")
 

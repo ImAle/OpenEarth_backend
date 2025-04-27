@@ -42,6 +42,7 @@ public class JwtAuthFilter extends OncePerRequestFilter {
             "/api/house/countries",
             "/api/house/nearTo",
             "/api/house/owner",
+            "/api/rent/house",
             "/api/chat/upload-attachment",
             "/api/chat/audio/",
             "/api/chat/chat.markRead",

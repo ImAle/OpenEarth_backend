@@ -19,6 +19,7 @@ public class Payment {
     private Long id;
     private String paymentId;
     private String payerId;
+    private long userId;
     private String method;
     private String status;
     private String currency;

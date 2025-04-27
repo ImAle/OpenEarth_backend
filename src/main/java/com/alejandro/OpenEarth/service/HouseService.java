@@ -10,6 +10,7 @@ import java.util.List;
 import java.util.Set;
 
 public interface HouseService {
+    House save(House house);
     House create(String token, HouseCreationDto houseDto, MultipartFile[] images);
     House getHouseById(Long id);
     Set<House> getHouses();

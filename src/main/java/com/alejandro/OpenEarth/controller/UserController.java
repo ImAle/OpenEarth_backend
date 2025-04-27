@@ -85,6 +85,22 @@ public class UserController {
         }
     }
 
+    @GetMapping("/profile")
+    public ResponseEntity<?> getUserProfile(@RequestHeader("Authorization") String token){
+        try{
+            long userId = jwtService.getUserId(token);
+            User user = userService.getUserFullDetailById(userId);
+
+            return ResponseEntity.ok().body(Map.of("user", new UserDto(user)));
+        }catch(RuntimeException rtex){
+            rtex.printStackTrace();
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(Map.of("Error", rtex.getMessage()));
+        }catch (Exception ex){
+            ex.printStackTrace();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(Map.of("Error", ex.getMessage()));
+        }
+    }
+
     @GetMapping("/details")
     public ResponseEntity<?> getUserDetails(@RequestParam("id") long userId){
         try{

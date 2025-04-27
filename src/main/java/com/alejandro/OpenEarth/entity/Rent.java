@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.time.Duration;
 import java.time.LocalDateTime;
 
 @Entity
@@ -16,6 +17,7 @@ public class Rent {
     private Long id;
     private LocalDateTime startDate;
     private LocalDateTime endDate;
+    private double price;
 
     @ManyToOne
     @JoinColumn(name = "user_id", nullable = false)
@@ -24,4 +26,12 @@ public class Rent {
     @ManyToOne
     @JoinColumn(name = "house_id", nullable = false)
     private House house;
+
+    @OneToOne
+    @JoinColumn(name="payment_id", nullable = false)
+    private Payment payment;
+
+    public double getTotalPrice(){
+        return price * Duration.between(startDate, endDate).toDays();
+    }
 }
