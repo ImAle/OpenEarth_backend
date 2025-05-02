@@ -49,6 +49,7 @@ public class RentServiceImpl implements RentService {
         rent.setStartDate(dto.getStartTime());
         rent.setEndDate(dto.getEndTime());
         rent.setPrice(payment.getAmount());
+        rent.setCancelled(false);
         rent.setUser(user);
         rent.setHouse(house);
         rent.setPayment(payment);
@@ -148,8 +149,8 @@ public class RentServiceImpl implements RentService {
 
         User user = jwtService.getUser(token);
         String title = rent.getHouse().getTitle();
-
-        rentRepository.delete(rent);
+        rent.setCancelled(true);
+        rentRepository.save(rent);
         emailService.cancelEmail(user.getEmail(), title);
     }
 

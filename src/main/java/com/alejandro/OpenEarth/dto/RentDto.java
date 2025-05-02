@@ -14,6 +14,7 @@ public class RentDto {
     private double price;
     private LocalDate startTime;
     private LocalDate endTime;
+    private boolean cancelled;
     private Long userId;
     private Long houseId;
 
@@ -24,5 +25,6 @@ public class RentDto {
         this.userId = rent.getUser().getId();
         this.houseId = rent.getHouse().getId();
         this.price = rent.getPrice();
+        this.cancelled = rent.isCancelled();
     }
 }

@@ -19,6 +19,7 @@ public class Rent {
     private LocalDate startDate;
     private LocalDate endDate;
     private double price;
+    private boolean cancelled;
 
     @ManyToOne
     @JoinColumn(name = "user_id", nullable = false)
