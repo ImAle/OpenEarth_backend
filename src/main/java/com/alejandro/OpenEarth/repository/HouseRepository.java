@@ -10,6 +10,7 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 
 @Repository("houseRepository")
@@ -47,5 +48,8 @@ public interface HouseRepository extends JpaRepository<House, Long> {
                                      @Param("maxLat") double maxLat,
                                      @Param("minLng") double minLng,
                                      @Param("maxLng") double maxLng);
+
+    @Query("SELECT h FROM House h LEFT JOIN FETCH h.reviews WHERE h.id = ?1")
+    Optional<House> findHouseToShow(Long id);
 
 }

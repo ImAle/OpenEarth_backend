@@ -11,6 +11,7 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Set;
 
 @Service("reviewService")
 public class ReviewServiceImpl implements ReviewService {
@@ -59,7 +60,7 @@ public class ReviewServiceImpl implements ReviewService {
     }
 
     @Override
-    public List<Review> getReviewFromHouseId(Long houseId) {
+    public Set<Review> getReviewFromHouseId(Long houseId) {
         houseService.getHouseById(houseId); // throws error if house does not exist
         return reviewRepository.findByHouse_Id(houseId);
     }

@@ -4,9 +4,9 @@ import com.alejandro.OpenEarth.entity.Review;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
-import java.util.List;
+import java.util.Set;
 
 @Repository("reviewRepository")
 public interface ReviewRepository extends JpaRepository<Review, Long> {
-    List<Review> findByHouse_Id(Long houseId);
+    Set<Review> findByHouse_Id(Long houseId);
 }

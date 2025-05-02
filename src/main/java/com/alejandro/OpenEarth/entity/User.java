@@ -71,4 +71,21 @@ public class User implements UserDetails {
     public void setRealUsername(String username){
         this.username = username;
     }
+
+    @Override
+    public String toString() {
+        return "User{" +
+                "id=" + id +
+                ", username='" + username + '\'' +
+                ", firstname='" + firstname + '\'' +
+                ", lastname='" + lastname + '\'' +
+                ", email='" + email + '\'' +
+                ", password='" + password + '\'' +
+                ", role=" + role +
+                ", enabled=" + enabled +
+                ", token='" + token + '\'' +
+                ", creationDate=" + creationDate +
+                ", picture=" + picture +
+                '}';
+    }
 }

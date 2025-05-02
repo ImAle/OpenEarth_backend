@@ -4,6 +4,8 @@ import jakarta.persistence.*;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.Objects;
+
 @Entity
 @Data
 @NoArgsConstructor
@@ -22,4 +24,14 @@ public class Review {
     @JoinColumn(name = "house_id", nullable = false)
     private House house;
 
+    @Override
+    public boolean equals(Object o) {
+        if (!(o instanceof Review review)) return false;
+        return Objects.equals(id, review.id);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hashCode(id);
+    }
 }

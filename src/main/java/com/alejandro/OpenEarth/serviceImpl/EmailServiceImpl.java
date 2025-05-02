@@ -38,7 +38,7 @@ public class EmailServiceImpl implements EmailService {
     @Override
     public void cancelEmail(String to, String houseTitle) {
         this.sendSimpleEmail(to, "The cancelation for " + houseTitle + " has been done!",
-                "You have successfully canceled your rent for " + houseTitle);
+                "You have successfully canceled your rent for " + houseTitle + ".\nWe will put in contact with you to return you the money in less than 5 working days.");
     }
 
     @Override

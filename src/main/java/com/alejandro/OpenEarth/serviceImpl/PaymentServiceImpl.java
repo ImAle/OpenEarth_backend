@@ -39,18 +39,25 @@ public class PaymentServiceImpl implements PaymentService {
 
     @Override
     public Payment saveFromCapture(Map<String,Object> capResp, User user) {
+        System.out.println(capResp.toString());
+
         String orderId = (String) capResp.get("id");
         String status  = (String) capResp.get("status");
         String payerId = (String)((Map)capResp.get("payer")).get("payer_id");
         var pu = ((List<Map<String,Object>>)capResp.get("purchase_units")).get(0);
         var cap = ((List<Map<String,Object>>)((Map)pu.get("payments")).get("captures")).get(0);
+
         Map amount = (Map)cap.get("amount");
+        System.out.println("map amount");
+        System.out.println(amount.toString());
 
         Payment p = new Payment();
         p.setPaymentId(orderId);
         p.setPayerId(payerId);
         p.setCurrency((String)amount.get("currency_code"));
         p.setAmount(Double.parseDouble((String)amount.get("value")));
+        p.setMethod("Paypal");
+        p.setDescription("Purchase Order: " + orderId + " at " + LocalDateTime.now() + " for " + amount.get("value") + amount.get("currency_code"));
         p.setStatus(status);
         p.setUserId(user.getId());
         p.setCreatedAt(LocalDateTime.now());

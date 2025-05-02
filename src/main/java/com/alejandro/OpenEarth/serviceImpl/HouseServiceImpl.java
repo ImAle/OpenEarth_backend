@@ -107,7 +107,7 @@ public class HouseServiceImpl implements HouseService {
 
     @Override
     public House getHouseById(Long id) {
-        Optional<House> house = houseRepository.findById(id);
+        Optional<House> house = houseRepository.findHouseToShow(id);
 
         if (house.isEmpty())
             throw new RuntimeException("House not found.");
@@ -214,8 +214,9 @@ public class HouseServiceImpl implements HouseService {
         if (house.isEmpty())
             throw new RuntimeException("House not found");
 
-        for(Picture picture : house.get().getPictures())
+        for(Picture picture : house.get().getPictures()) {
             pictureService.delete(picture);
+        }
 
         houseRepository.deleteById(id);
     }

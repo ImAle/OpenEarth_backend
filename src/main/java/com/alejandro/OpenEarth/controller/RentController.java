@@ -102,7 +102,7 @@ public class RentController {
                 return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("You are not allowed to perform this operation");
 
             rentService.cancelRentById(token, rentId);
-            return ResponseEntity.status(HttpStatus.CREATED).body("Rent has been cancelled");
+            return ResponseEntity.status(HttpStatus.OK).body(Map.of("message", "Rent has been cancelled"));
         }catch (RuntimeException rtex){
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(rtex.getMessage());
         }catch (IllegalAccessException iaex){

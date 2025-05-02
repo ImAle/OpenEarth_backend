@@ -10,6 +10,7 @@ import com.alejandro.OpenEarth.service.RentService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -47,6 +48,7 @@ public class RentServiceImpl implements RentService {
 
         rent.setStartDate(dto.getStartTime());
         rent.setEndDate(dto.getEndTime());
+        rent.setPrice(payment.getAmount());
         rent.setUser(user);
         rent.setHouse(house);
         rent.setPayment(payment);
@@ -101,7 +103,7 @@ public class RentServiceImpl implements RentService {
     @Override
     public boolean isRentActive(Rent rent) {
         LocalDate now = LocalDate.now();
-        return now.isAfter(rent.getStartDate()) && now.isBefore(rent.getEndDate());
+        return now.isBefore(rent.getStartDate());
     }
 
     @Override
@@ -140,15 +142,15 @@ public class RentServiceImpl implements RentService {
     @Override
     public void cancelRent(String token, Rent rent) throws IllegalAccessException{
         if(!this.isRentActive(rent))
-            throw new RuntimeException("Rent is not active");
+            throw new RuntimeException("Rent is not pending");
         if(!isthatMyRent(token, rent))
-            throw new IllegalAccessException("You are not authorize to cancel someone else rent");
+            throw new IllegalAccessException("You are not authorized to cancel someone else rent");
 
         User user = jwtService.getUser(token);
-        rent.setEndDate(LocalDate.now());
-        this.saveRent(rent);
+        String title = rent.getHouse().getTitle();
 
-        emailService.cancelEmail(user.getEmail(), rent.getHouse().getTitle());
+        rentRepository.delete(rent);
+        emailService.cancelEmail(user.getEmail(), title);
     }
 
     @Override

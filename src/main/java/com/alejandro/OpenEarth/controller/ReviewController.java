@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @RestController
@@ -37,9 +38,7 @@ public class ReviewController {
             if(result.hasErrors())
                 return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(result.getAllErrors());
 
-            if(!Objects.equals(jwtService.getUser(token).getId(), jwtService.getUser(token).getId()))
-                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("You can not write a review on behalf of someone else");
-
+            System.out.println("Helloda");
             Review rev = reviewService.createReview(token, review);
             return ResponseEntity.status(HttpStatus.CREATED).body(Map.of("review", rev));
         }catch (RuntimeException rtex){
@@ -52,7 +51,7 @@ public class ReviewController {
     @GetMapping("/house")
     public ResponseEntity<?> getReviewOfHouse(@RequestParam("id") long houseId) {
         try{
-            List<Review> reviews = reviewService.getReviewFromHouseId(houseId);
+            Set<Review> reviews = reviewService.getReviewFromHouseId(houseId);
 
             if(reviews.isEmpty())
                 return ResponseEntity.status(HttpStatus.NO_CONTENT).build();

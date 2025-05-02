@@ -1,11 +1,9 @@
 package com.alejandro.OpenEarth.controller;
 
 import com.alejandro.OpenEarth.dto.*;
-import com.alejandro.OpenEarth.entity.House;
-import com.alejandro.OpenEarth.entity.HouseCategory;
-import com.alejandro.OpenEarth.entity.HouseStatus;
-import com.alejandro.OpenEarth.entity.User;
+import com.alejandro.OpenEarth.entity.*;
 import com.alejandro.OpenEarth.service.HouseService;
+import com.alejandro.OpenEarth.service.ReviewService;
 import com.alejandro.OpenEarth.serviceImpl.CurrencyServiceImpl;
 import com.alejandro.OpenEarth.serviceImpl.UserService;
 import jakarta.validation.Valid;
@@ -29,6 +27,10 @@ public class HouseController {
     @Autowired
     @Qualifier("houseService")
     private HouseService houseService;
+
+    @Autowired
+    @Qualifier("reviewService")
+    private ReviewService reviewService;
 
     @Autowired
     @Qualifier("currencyService")
@@ -101,11 +103,12 @@ public class HouseController {
     @GetMapping("/owner")
     public ResponseEntity<?> getHousesByOwner(@RequestParam("owner") long id, @RequestParam(value = "currency", required = false) String currency){
         try{
+            System.out.println("Owner: " + id);
             List<House> houses = houseService.getHousesByOwnerId(id);
 
-            if(houses.isEmpty()) {
+            if(houses.isEmpty())
                 return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
-            }
+
 
             if(currency == null || currency.isEmpty())
                 currency = "EUR";
@@ -146,7 +149,6 @@ public class HouseController {
                 currency = "EUR";
 
             House house = houseService.getHouseById(houseId);
-
             HouseDetailsDto dto = new HouseDetailsDto(house, currency);
 
             return ResponseEntity.ok().body(Map.of("house", dto));
@@ -180,13 +182,15 @@ public class HouseController {
     public ResponseEntity<?> deleteHouse(@RequestHeader("Authorization") String token, @RequestParam("id") Long houseId) {
         try{
             if(!houseService.isMyHouse(token, houseId))
-                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(Map.of("error", "You can not edit this house"));
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(Map.of("error", "You can not delete this house"));
 
             houseService.deleteHouseById(houseId);
             return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
         }catch (RuntimeException rtex){
+            rtex.printStackTrace();
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(Map.of("error", rtex.getMessage()));
         }catch (Exception e){
+            e.printStackTrace();
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(Map.of("error", e.getMessage()));
         }
     }

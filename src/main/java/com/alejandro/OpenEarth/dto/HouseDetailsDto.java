@@ -31,7 +31,7 @@ public class HouseDetailsDto {
     private LocalDate creationDate;
     private Set<PictureDto> pictures = new HashSet<>();
     private UserInfoDto owner;
-    private List<ReviewDto> reviews = new ArrayList<>();
+    private Set<ReviewDto> reviews = new HashSet<>();
 
     public HouseDetailsDto(House house, String currency) {
         this.id = house.getId();
@@ -58,8 +58,9 @@ public class HouseDetailsDto {
 
         this.price = Math.round(price);
 
-        List<ReviewDto> reviews = house.getReviews().stream().map(ReviewDto::new).toList();
+        Set<ReviewDto> reviews = house.getReviews().stream().map(ReviewDto::new).collect(Collectors.toSet());
         this.setReviews(reviews);
+
         this.pictures = house.getPictures()
                 .stream()
                 .map(p -> new PictureDto(p.getId(), p.getUrl()))

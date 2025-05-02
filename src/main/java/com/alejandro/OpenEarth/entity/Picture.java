@@ -4,6 +4,8 @@ import jakarta.persistence.*;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.Objects;
+
 @Entity
 @Data
 @NoArgsConstructor
@@ -35,4 +37,22 @@ public class Picture {
         this.house = house;
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (!(o instanceof Picture picture)) return false;
+        return Objects.equals(id, picture.id) && Objects.equals(url, picture.url);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, url);
+    }
+
+    @Override
+    public String toString() {
+        return "Picture{" +
+                "url='" + url + '\'' +
+                ", id=" + id +
+                '}';
+    }
 }

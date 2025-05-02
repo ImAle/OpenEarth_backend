@@ -146,6 +146,7 @@ public class AuthService {
     public void updateUserPassword(User user, String newPassword){
         user.setPassword(userService.passwordEncoder().encode(newPassword));
         userService.saveUser(user);
+        emailService.sendSuccessfullPasswordReset(user.getEmail());
     }
 
     public void setTokenforPasswordReset(User user){

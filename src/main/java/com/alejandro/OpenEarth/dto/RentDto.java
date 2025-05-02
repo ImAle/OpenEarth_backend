@@ -11,6 +11,7 @@ import java.time.LocalDate;
 public class RentDto {
 
     private Long id;
+    private double price;
     private LocalDate startTime;
     private LocalDate endTime;
     private Long userId;
@@ -22,5 +23,6 @@ public class RentDto {
         this.endTime = rent.getEndDate();
         this.userId = rent.getUser().getId();
         this.houseId = rent.getHouse().getId();
+        this.price = rent.getPrice();
     }
 }

@@ -6,6 +6,7 @@ import lombok.NoArgsConstructor;
 
 import java.time.Duration;
 import java.time.LocalDate;
+import java.util.Objects;
 
 @Entity
 @Data
@@ -33,5 +34,28 @@ public class Rent {
 
     public double getTotalPrice(){
         return price * Duration.between(startDate, endDate).toDays();
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (!(o instanceof Rent rent)) return false;
+        return Objects.equals(id, rent.id);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hashCode(id);
+    }
+
+    @Override
+    public String toString() {
+        return "Rent{" +
+                "id=" + id +
+                ", startDate=" + startDate +
+                ", endDate=" + endDate +
+                ", price=" + price +
+                ", user=" + user +
+                ", payment=" + payment +
+                '}';
     }
 }
