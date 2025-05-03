@@ -19,7 +19,7 @@ public class UserInfoDto {
 
     UserInfoDto(User user){
         this.id = user.getId();
-        this.username = user.getUsername();
+        this.username = user.getRealUsername();
         this.firstName = user.getFirstname();
         this.lastName = user.getLastname();
         this.picture = user.getPicture() != null ? user.getPicture().getUrl() : null;

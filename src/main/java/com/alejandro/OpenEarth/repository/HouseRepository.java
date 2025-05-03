@@ -33,8 +33,8 @@ public interface HouseRepository extends JpaRepository<House, Long> {
       AND h.status = 'AVAILABLE'
       AND (:minPrice IS NULL OR h.price >= :minPrice)
       AND (:maxPrice IS NULL OR h.price <= :maxPrice)
-      AND (:beds IS NULL OR h.beds = :beds)
-      AND (:guests IS NULL OR h.guests = :guests)
+      AND (:beds IS NULL OR h.beds >= :beds)
+      AND (:guests IS NULL OR h.guests >= :guests)
       AND (:category IS NULL OR h.category = :category)
     """)
     List<House> findHousesByFilters(@Param("minPrice") Double minPrice,

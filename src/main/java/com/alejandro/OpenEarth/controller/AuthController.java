@@ -62,7 +62,13 @@ public class AuthController {
                 return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(result.getAllErrors());
 
             String token = authService.register(userDto).getFirst();
-            return ResponseEntity.ok().body(Map.of("token", token));
+            User user = jwtService.getUser(token);
+            return ResponseEntity.ok().body(Map.of(
+                    "token", token,
+                    "id", user.getId(),
+                    "username", jwtService.extractUsername(token),
+                    "role", user.getRole()
+            ));
         }catch(RuntimeException rtex){
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(rtex.getMessage());
         } catch (Exception e){
