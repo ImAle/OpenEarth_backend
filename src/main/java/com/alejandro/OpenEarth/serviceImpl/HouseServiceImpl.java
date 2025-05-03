@@ -214,7 +214,7 @@ public class HouseServiceImpl implements HouseService {
         if (house.isEmpty())
             throw new RuntimeException("House not found");
 
-        for(Picture picture : house.get().getPictures()) {
+        for(Picture picture : new ArrayList<>(house.get().getPictures())) {
             pictureService.delete(picture);
         }
 

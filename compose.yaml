@@ -32,7 +32,7 @@ services:
     ports:
       - "8080:8080"
     volumes:
-      - ./src/main/resources/static:/app/static
+      - ./src/main/resources/static/pictures:/app/static/pictures
       - ./keystore.p12:/app/keystore.p12
     networks:
       - app-net
