@@ -17,6 +17,9 @@ public class PaypalServiceImpl implements PaypalService {
 
     private RestTemplate restTemplate = new RestTemplate();
 
+    @Value("${url.production}")
+    private String urlProduction;
+
     @Value("${paypal.client.id}")
     private String clientId;
 
@@ -43,8 +46,8 @@ public class PaypalServiceImpl implements PaypalService {
                         "description", description
                 )),
                 "application_context", Map.of(
-                        "return_url", "http://localhost:4200/paypal-success",
-                        "cancel_url", "http://localhost:4200/paypal-cancel"
+                        "return_url", urlProduction + "/paypal-success",
+                        "cancel_url", urlProduction + "http://localhost:80/paypal-cancel"
                 )
         );
 

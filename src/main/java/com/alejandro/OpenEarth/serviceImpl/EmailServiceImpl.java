@@ -2,12 +2,16 @@ package com.alejandro.OpenEarth.serviceImpl;
 
 import com.alejandro.OpenEarth.service.EmailService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Service;
 
 @Service("emailService")
 public class EmailServiceImpl implements EmailService {
+
+    @Value("${url.production}")
+    private String urlProduction;
 
     @Autowired
     private JavaMailSender mailSender;
@@ -43,7 +47,7 @@ public class EmailServiceImpl implements EmailService {
 
     @Override
     public void sendResetPasswordEmail(String to, String token){
-        String resetUrl = "http://localhost:4200/forgot-password?token=" + token;
+        String resetUrl = urlProduction + "/forgot-password?token=" + token;
 
         this.sendSimpleEmail(to, "Password Reset Request",
                 "Click the following link to reset your password: \n" + resetUrl  +

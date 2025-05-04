@@ -12,6 +12,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.Payload;
@@ -70,10 +71,17 @@ public class ChatController {
 
     @GetMapping("/messages/{otherUserId}")
     public ResponseEntity<List<?>> getMessages(@RequestHeader("Authorization") String token, @PathVariable Long otherUserId) {
-        Long userId = jwtService.getUser(token).getId();
+        try {
+            Long userId = jwtService.getUser(token).getId();
 
-        List<ChatMessageDto> messages = chatService.getMessageHistory(userId, otherUserId);
-        return ResponseEntity.ok(messages);
+            List<ChatMessageDto> messages = chatService.getMessageHistory(userId, otherUserId);
+            return ResponseEntity.ok(messages);
+        }catch (Exception e) {
+            e.printStackTrace();
+            System.out.println(e.getMessage());
+        }
+
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
     }
 
     @PostMapping("/send")
