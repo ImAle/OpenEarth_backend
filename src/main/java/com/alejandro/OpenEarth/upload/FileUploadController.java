@@ -2,8 +2,8 @@ package com.alejandro.OpenEarth.upload;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.Resource;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
@@ -27,7 +27,18 @@ public class FileUploadController {
 		if (file == null)
 			return ResponseEntity.notFound().build();
 
-		return ResponseEntity.ok().body(file);
+		MediaType mediaType;
+		if (filename.endsWith(".avif")) {
+			mediaType = MediaType.parseMediaType("image/avif");
+		} else if (filename.endsWith(".jpeg") || filename.endsWith(".jpg")) {
+			mediaType = MediaType.IMAGE_JPEG;
+		} else if (filename.endsWith(".png")) {
+			mediaType = MediaType.IMAGE_PNG;
+		} else {
+			mediaType = MediaType.APPLICATION_OCTET_STREAM;
+		}
+
+		return ResponseEntity.ok().contentType(mediaType).body(file);
 	}
 
 	@PostMapping("/api/")

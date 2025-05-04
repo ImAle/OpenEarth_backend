@@ -23,7 +23,7 @@ services:
 
   spring-app:
     build: .
-    container_name: app_container
+    container_name: backend
     environment:
       SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/openEarth
       SPRING_DATASOURCE_USERNAME: root
@@ -39,6 +39,17 @@ services:
     depends_on:
       mysql:
         condition: service_healthy
+
+  angular-frontend:
+    build:
+      context: ../OpenEarth_Frontend
+    container_name: frontend
+    ports:
+      - "80:80"
+    networks:
+      - app-net
+    depends_on:
+      - spring-app
 
 
 
