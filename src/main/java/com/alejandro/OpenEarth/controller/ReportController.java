@@ -37,7 +37,10 @@ public class ReportController {
             User user = jwtService.getUser(token);
 
             if(!jwtService.isGuest(token) && !jwtService.isHostess(token))
-                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("You can not report if you are not guest or hostess");
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(Map.of("message", "You can not report if you are not guest or hostess"));
+
+            if(Objects.equals(user.getId(), report.getReportedId()))
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(Map.of("message", "You can not report yourself"));
 
             if(result.hasErrors())
                 return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(result.getAllErrors());
