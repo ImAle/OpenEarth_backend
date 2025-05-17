@@ -47,7 +47,7 @@ public class PaypalServiceImpl implements PaypalService {
                 )),
                 "application_context", Map.of(
                         "return_url", urlProduction + "/paypal-success",
-                        "cancel_url", urlProduction + "http://localhost:80/paypal-cancel"
+                        "cancel_url", urlProduction + "/paypal-cancel"
                 )
         );
 
