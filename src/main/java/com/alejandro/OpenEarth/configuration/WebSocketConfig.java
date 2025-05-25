@@ -23,6 +23,11 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
                 .setAllowedOrigins("http://localhost:80", "http://127.0.0.1:80")
                 .addInterceptors(webSocketAuthInterceptor)
                 .withSockJS();
+
+        // Endpoint for smartphones
+        registry.addEndpoint("/ws/chat-native")
+                .setAllowedOrigins("*")
+                .addInterceptors(webSocketAuthInterceptor);
     }
 
     @Override

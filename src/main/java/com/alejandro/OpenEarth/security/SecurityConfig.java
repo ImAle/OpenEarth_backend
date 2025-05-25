@@ -51,6 +51,8 @@ public class SecurityConfig {
                                 "/ws/chat/**",
                                 "/ws/chat",
                                 "/ws/chat.sockjs/**",
+                                "/ws/chat-native",
+                                "/ws/chat-native/**",
                                 "/app/**",
                                 "/user/**"
                         ).permitAll()
