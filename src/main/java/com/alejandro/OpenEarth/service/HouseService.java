@@ -1,8 +1,6 @@
 package com.alejandro.OpenEarth.service;
 
-import com.alejandro.OpenEarth.dto.HouseCreationDto;
-import com.alejandro.OpenEarth.dto.HousePreviewDto;
-import com.alejandro.OpenEarth.dto.HouseUpdateDto;
+import com.alejandro.OpenEarth.dto.*;
 import com.alejandro.OpenEarth.entity.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -25,4 +23,8 @@ public interface HouseService {
     House updateHouse(HouseUpdateDto houseDto, Long id, MultipartFile[] newPictures);
     void deleteHouseById(Long id);
     boolean isThatMyPictureHouse(Picture picture, User user);
+    HouseDetailsDto transformToHouseDetailsDto(House house, String currency);
+    HousePreviewDto transformToHousePreviewDto(House house, String currency);
+    HouseUpdateFormDto transformToHouseUpdateFormDto(House house, String currency);
+    UserDto transformToUserDto(User user);
 }

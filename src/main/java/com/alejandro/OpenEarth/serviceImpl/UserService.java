@@ -1,5 +1,9 @@
 package com.alejandro.OpenEarth.serviceImpl;
 
+import com.alejandro.OpenEarth.dto.HousePreviewDto;
+import com.alejandro.OpenEarth.dto.RentDto;
+import com.alejandro.OpenEarth.dto.ReviewDto;
+import com.alejandro.OpenEarth.dto.UserDto;
 import com.alejandro.OpenEarth.entity.UserRole;
 import com.alejandro.OpenEarth.repository.UserRepository;
 import com.alejandro.OpenEarth.entity.User;

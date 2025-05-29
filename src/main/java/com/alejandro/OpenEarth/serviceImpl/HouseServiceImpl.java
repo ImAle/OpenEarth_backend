@@ -1,8 +1,6 @@
 package com.alejandro.OpenEarth.serviceImpl;
 
-import com.alejandro.OpenEarth.dto.HouseCreationDto;
-import com.alejandro.OpenEarth.dto.HousePreviewDto;
-import com.alejandro.OpenEarth.dto.HouseUpdateDto;
+import com.alejandro.OpenEarth.dto.*;
 import com.alejandro.OpenEarth.entity.*;
 import com.alejandro.OpenEarth.repository.HouseRepository;
 import com.alejandro.OpenEarth.service.*;
@@ -15,6 +13,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDate;
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Service("houseService")
 public class HouseServiceImpl implements HouseService {
@@ -133,7 +132,7 @@ public class HouseServiceImpl implements HouseService {
 
         houses.removeIf(h -> h.getId().equals(house.getId()));
 
-        return houses.stream().map(h -> new HousePreviewDto(h, currency)).toList();
+        return houses.stream().map(h -> this.transformToHousePreviewDto(h, currency)).toList();
     }
 
     @Override
@@ -145,7 +144,7 @@ public class HouseServiceImpl implements HouseService {
             houses = geoPolygonService.filterHousesInPolygon(geoJson, houses);
         }
 
-        return houses.stream().map(h -> new HousePreviewDto(h, currency)).toList();
+        return houses.stream().map(h -> this.transformToHousePreviewDto(h, currency)).toList();
     }
 
     @Override
@@ -234,5 +233,122 @@ public class HouseServiceImpl implements HouseService {
         }
 
         return result;
+    }
+
+    public HouseDetailsDto transformToHouseDetailsDto(House house, String currency) {
+        HouseDetailsDto houseDto = new HouseDetailsDto();
+        houseDto.setId(house.getId());
+        houseDto.setTitle(house.getTitle());
+        houseDto.setDescription(house.getDescription());
+        houseDto.setGuests(house.getGuests());
+        houseDto.setBedrooms(house.getBedrooms());
+        houseDto.setBeds(house.getBeds());
+        houseDto.setBathrooms(house.getBathrooms());
+        houseDto.setLocation(house.getLocation());
+        houseDto.setLatitude(house.getLatitude());
+        houseDto.setLongitude(house.getLongitude());
+        houseDto.setCategory(house.getCategory());
+        houseDto.setStatus(house.getStatus());
+        houseDto.setCurrency(currency);
+        houseDto.setCreationDate(house.getCreationDate());
+        houseDto.setOwner(new UserInfoDto(house.getOwner()));
+        double price = house.getPrice();
+
+        if(!Objects.equals(houseDto.getCurrency(), "EUR")){
+            CurrencyService currencyService = new CurrencyServiceImpl();
+            price = currencyService.getPriceInSelectedCurrency(houseDto.getCurrency(), house.getPrice());
+        }
+
+        houseDto.setPrice(Math.round(price));
+
+        Set<ReviewDto> reviews = house.getReviews().stream().map(ReviewDto::new).collect(Collectors.toSet());
+        houseDto.setReviews(reviews);
+
+        houseDto.setPictures(house.getPictures()
+                .stream()
+                .map(p -> new PictureDto(p.getId(), p.getUrl()))
+                .collect(Collectors.toSet()));
+
+        return houseDto;
+    }
+
+    public HousePreviewDto transformToHousePreviewDto(House house, String currency) {
+        HousePreviewDto houseDto = new HousePreviewDto();
+        houseDto.setId(house.getId());
+        houseDto.setTitle(house.getTitle());
+        houseDto.setLocation(house.getLocation());
+        houseDto.setLatitude(house.getLatitude());
+        houseDto.setLongitude(house.getLongitude());
+        houseDto.setGuests(house.getGuests());
+        houseDto.setBedrooms(house.getBedrooms());
+        houseDto.setBeds(house.getBeds());
+        houseDto.setBathrooms(house.getBathrooms());
+        houseDto.setCurrency(currency);
+        houseDto.setPictures(house.getPictures()
+                .stream().map(Picture::getUrl)
+                .collect(Collectors.toSet()));
+
+        double price = house.getPrice();
+
+        if(!Objects.equals(houseDto.getCurrency(), "EUR")){
+            CurrencyService currencyService = new CurrencyServiceImpl();
+            price = currencyService.getPriceInSelectedCurrency(houseDto.getCurrency(), house.getPrice());
+        }
+
+        houseDto.setPrice(Math.round(price));
+
+
+        return houseDto;
+    }
+
+    public HouseUpdateFormDto transformToHouseUpdateFormDto(House house, String currency) {
+        HouseUpdateFormDto houseDto = new HouseUpdateFormDto();
+        houseDto.setTitle(house.getTitle());
+        houseDto.setDescription(house.getDescription());
+        houseDto.setGuests(house.getGuests());
+        houseDto.setBedrooms(house.getBedrooms());
+        houseDto.setBeds(house.getBeds());
+        houseDto.setBathrooms(house.getBathrooms());
+        houseDto.setCurrency(currency);
+        houseDto.setCategory(house.getCategory().toString());
+        houseDto.setStatus((house.getStatus().toString()));
+        houseDto.setCurrency(currency);
+
+        Set<PictureDto> pictures = new HashSet<>();
+        for(Picture picture : house.getPictures()) {
+            pictures.add(new PictureDto(picture.getId(), picture.getUrl()));
+        }
+
+        houseDto.setPictures(pictures);
+
+        double price = house.getPrice();
+
+        if(!Objects.equals(houseDto.getCurrency(), "EUR")){
+            CurrencyService currencyService = new CurrencyServiceImpl();
+            price = currencyService.getPriceInSelectedCurrency(houseDto.getCurrency(), house.getPrice());
+        }
+
+        houseDto.setPrice(price);
+
+        return houseDto;
+    }
+
+    public UserDto transformToUserDto(User user) {
+        UserDto userDto = new UserDto();
+        userDto.setId(user.getId());
+        userDto.setUsername(user.getRealUsername());
+        userDto.setFirstName(user.getFirstname());
+        userDto.setLastName(user.getLastname());
+        userDto.setEmail(user.getEmail());
+        userDto.setEnabled(user.isEnabled());
+        userDto.setRole(user.getRole());
+        userDto.setCreationDate(user.getCreationDate());
+
+        userDto.setHouses(user.getHouses().stream().map(h -> this.transformToHousePreviewDto(h, "EUR")).toList());
+        userDto.setRents(user.getRents().stream().map(RentDto::new).toList());
+        userDto.setReviews(user.getReviews().stream().map(ReviewDto::new).toList());
+        userDto.setPicture(user.getPicture() != null ? user.getPicture().getUrl() : null);
+
+        return userDto;
     }
 }

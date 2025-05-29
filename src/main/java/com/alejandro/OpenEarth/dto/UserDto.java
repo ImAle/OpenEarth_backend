@@ -25,20 +25,4 @@ public class UserDto {
     private List<ReviewDto> reviews = new ArrayList<>();
     private LocalDate creationDate;
 
-    public UserDto(User user) {
-        this.setId(user.getId());
-        this.setUsername(user.getRealUsername());
-        this.setFirstName(user.getFirstname());
-        this.setLastName(user.getLastname());
-        this.setEmail(user.getEmail());
-        this.setEnabled(user.isEnabled());
-        this.setRole(user.getRole());
-        this.setEnabled(user.isEnabled());
-        this.creationDate = user.getCreationDate();
-
-        this.setHouses(user.getHouses().stream().map(h -> new HousePreviewDto(h, "EUR")).toList());
-        this.setRents(user.getRents().stream().map(RentDto::new).toList());
-        this.setReviews(user.getReviews().stream().map(ReviewDto::new).toList());
-        this.setPicture(user.getPicture() != null ? user.getPicture().getUrl() : null);
-    }
 }

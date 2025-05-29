@@ -3,6 +3,7 @@ package com.alejandro.OpenEarth.controller;
 import com.alejandro.OpenEarth.dto.UserDto;
 import com.alejandro.OpenEarth.dto.UserUpdateDto;
 import com.alejandro.OpenEarth.entity.User;
+import com.alejandro.OpenEarth.service.HouseService;
 import com.alejandro.OpenEarth.serviceImpl.AuthService;
 import com.alejandro.OpenEarth.serviceImpl.JwtService;
 import com.alejandro.OpenEarth.serviceImpl.UserService;
@@ -31,6 +32,10 @@ public class UserController {
     @Autowired
     @Qualifier("jwtService")
     private JwtService jwtService;
+
+    @Autowired
+    @Qualifier("houseService")
+    private HouseService houseService;
 
     @Autowired
     @Qualifier("authService")
@@ -77,7 +82,7 @@ public class UserController {
             if(users.isEmpty())
                 return ResponseEntity.noContent().build();
 
-            List<UserDto> dtos = users.stream().map(UserDto::new).toList();
+            List<UserDto> dtos = users.stream().map(u -> this.houseService.transformToUserDto(u)).toList();
 
             return ResponseEntity.ok().body(Map.of("users", dtos));
         }catch (RuntimeException rtex){
@@ -91,7 +96,7 @@ public class UserController {
             long userId = jwtService.getUserId(token);
             User user = userService.getUserFullDetailById(userId);
 
-            return ResponseEntity.ok().body(Map.of("user", new UserDto(user)));
+            return ResponseEntity.ok().body(Map.of("user", this.houseService.transformToUserDto(user)));
         }catch(RuntimeException rtex){
             rtex.printStackTrace();
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(Map.of("Error", rtex.getMessage()));
@@ -106,7 +111,7 @@ public class UserController {
         try{
             User user = userService.getUserFullDetailById(userId);
 
-            return ResponseEntity.ok().body(Map.of("user", new UserDto(user)));
+            return ResponseEntity.ok().body(Map.of("user", this.houseService.transformToUserDto(user)));
         }catch(RuntimeException rtex){
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(Map.of("Error", rtex.getMessage()));
         }

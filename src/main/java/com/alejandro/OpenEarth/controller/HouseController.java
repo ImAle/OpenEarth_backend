@@ -5,7 +5,6 @@ import com.alejandro.OpenEarth.entity.*;
 import com.alejandro.OpenEarth.service.HouseService;
 import com.alejandro.OpenEarth.service.ReviewService;
 import com.alejandro.OpenEarth.serviceImpl.CurrencyServiceImpl;
-import com.alejandro.OpenEarth.serviceImpl.UserService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -27,10 +26,6 @@ public class HouseController {
     @Autowired
     @Qualifier("houseService")
     private HouseService houseService;
-
-    @Autowired
-    @Qualifier("reviewService")
-    private ReviewService reviewService;
 
     @Autowired
     @Qualifier("currencyService")
@@ -103,7 +98,6 @@ public class HouseController {
     @GetMapping("/owner")
     public ResponseEntity<?> getHousesByOwner(@RequestParam("owner") long id, @RequestParam(value = "currency", required = false) String currency){
         try{
-            System.out.println("Owner: " + id);
             List<House> houses = houseService.getHousesByOwnerId(id);
 
             if(houses.isEmpty())
@@ -114,7 +108,7 @@ public class HouseController {
                 currency = "EUR";
 
             String finalCurrency = currency;
-            List<HousePreviewDto> preview = houses.stream().map(house -> new HousePreviewDto(house, finalCurrency)).toList();
+            List<HousePreviewDto> preview = houses.stream().map(house -> this.houseService.transformToHousePreviewDto(house, finalCurrency)).toList();
 
             return ResponseEntity.ok().body(Map.of("houses", preview));
         }catch (RuntimeException rtex){
@@ -149,7 +143,7 @@ public class HouseController {
                 currency = "EUR";
 
             House house = houseService.getHouseById(houseId);
-            HouseDetailsDto dto = new HouseDetailsDto(house, currency);
+            HouseDetailsDto dto = this.houseService.transformToHouseDetailsDto(house, currency);
 
             return ResponseEntity.ok().body(Map.of("house", dto));
         }catch (RuntimeException rtex){

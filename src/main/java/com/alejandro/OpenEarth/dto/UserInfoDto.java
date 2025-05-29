@@ -17,7 +17,7 @@ public class UserInfoDto {
     private String picture;
     private LocalDate creationDate;
 
-    UserInfoDto(User user){
+    public UserInfoDto(User user){
         this.id = user.getId();
         this.username = user.getRealUsername();
         this.firstName = user.getFirstname();

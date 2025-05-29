@@ -29,28 +29,4 @@ public class HousePreviewDto {
     private String currency;
     private Set<String> pictures = new HashSet<>();
 
-    public HousePreviewDto(House house, String currency){
-        this.setId(house.getId());
-        this.setTitle(house.getTitle());
-        this.setLocation(house.getLocation());
-        this.setLatitude(house.getLatitude());
-        this.setLongitude(house.getLongitude());
-        this.setGuests(house.getGuests());
-        this.setBedrooms(house.getBedrooms());
-        this.setBeds(house.getBeds());
-        this.setBathrooms(house.getBathrooms());
-        this.currency = currency;
-        this.setPictures(house.getPictures()
-                .stream().map(Picture::getUrl)
-                .collect(Collectors.toSet()));
-
-        double price = house.getPrice();
-
-        if(!Objects.equals(this.currency, "EUR")){
-            CurrencyService currencyService = new CurrencyServiceImpl();
-            price = currencyService.getPriceInSelectedCurrency(this.currency, house.getPrice());
-        }
-
-        this.price = Math.round(price);
-    }
 }
